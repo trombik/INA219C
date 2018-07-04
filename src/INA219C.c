@@ -1,6 +1,7 @@
 #include "INA219C.h"
 
 #include <math.h>
+#include <assert.h>
 
 #if defined(ESP32)
 #include "sys/esp_idf.c"
