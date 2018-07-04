@@ -19,7 +19,7 @@ int8_t
 ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 {
 	int8_t r = 0;
-	static char log_tag[] = __func__;
+	static char log_tag[] = "ina219c_read";
 	i2c_cmd_handle_t command;
 
 	command = i2c_cmd_link_create();
@@ -53,7 +53,7 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 {
 	i2c_cmd_handle_t command;
 	esp_err_t r;
-	static char log_tag[] = __func__;
+	static char log_tag[] = "ina219c_write";
 
 	/* read-only registers */
 	assert(
