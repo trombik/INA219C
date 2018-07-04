@@ -53,10 +53,15 @@ cache:
   directories:
     - "~/.platformio"
 env:
-  - PLATFORMIO_CI_SRC=examples/esp_idf/src/main.c
+
+addons:
+  apt:
+    packages:
+      - make
 
 install:
   - pip install -U platformio
   - platformio update
 script:
-  - platformio ci --lib="." --project-conf examples/esp_idf/platformio.ini examples/esp_idf/src
+  #  - PLATFORMIO_CI_SRC=examples/esp_idf/src pio ci -lib . --project-conf examples/esp_idf/platformio.ini
+  - gmake TEST_COMPONENTS="INA219C"
