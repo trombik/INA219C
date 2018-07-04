@@ -69,8 +69,14 @@ addons:
 install:
   - pip install -U platformio
   - platformio update
-script:
+
+before_script:
+  - wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+  - tar -xf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+  - export PATH="$PATH:~/esp/xtensa-esp32-elf/bin"
   - git clone --single-branch -b v3.1-beta1 https://github.com/espressif/esp-idf.git ~/esp-idf
+
+script:
   #  - PLATFORMIO_CI_SRC=examples/esp_idf/src pio ci -lib . --project-conf examples/esp_idf/platformio.ini
   - make defconfig
   - make TEST_COMPONENTS="INA219C"
