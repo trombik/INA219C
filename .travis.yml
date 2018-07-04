@@ -53,6 +53,7 @@ cache:
   directories:
     - "~/.platformio"
 env:
+  IDF_PATH: ~/esp-idf
 
 addons:
   apt:
@@ -63,5 +64,6 @@ install:
   - pip install -U platformio
   - platformio update
 script:
+  - git clone --single-branch -b v3.1-beta1 https://github.com/espressif/esp-idf.git ~/esp-idf
   #  - PLATFORMIO_CI_SRC=examples/esp_idf/src pio ci -lib . --project-conf examples/esp_idf/platformio.ini
   - make TEST_COMPONENTS="INA219C"
