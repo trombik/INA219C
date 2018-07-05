@@ -4,7 +4,9 @@
 #
 
 PROJECT_NAME := INA219C
+UNIT_TEST_APP :=	$(IDF_PATH)/tools/unit-test-app
 # include unity component for unit testing
-EXTRA_COMPONENT_DIRS=	$(IDF_PATH)/tools/unit-test-app/components
+EXTRA_COMPONENT_DIRS=	$(UNIT_TEST_APP)/components
+SDKCONFIG_DEFAULTS=	 $(UNIT_TEST_APP)/sdkconfig.defaults
 
-include $(IDF_PATH)/make/project.mk
+include $(UNIT_TEST_APP)/Makefile

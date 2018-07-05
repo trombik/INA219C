@@ -1,4 +1,4 @@
 .pioenvs
 .piolibdeps
 build/
-sdkconfig.old
+sdkconfig*
