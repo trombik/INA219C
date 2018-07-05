@@ -3,7 +3,8 @@
 
 TEST_CASE("first_test", "[INA219C]")
 {
-	int a = 1;
-	TEST_ASSERT( a == 1 );
-
+	struct ina219c_dev dev;
+	const uint8_t i2c_address = 0x40;
+	dev = ina219c_create(i2c_address);
+	TEST_ASSERT_EQUAL_UINT8(i2c_address, dev.address);
 }

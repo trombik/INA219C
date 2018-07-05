@@ -3,6 +3,7 @@
 #include "unity_config.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "INA219C.h"
 
 void
 unityTask(void *pvParameters) {

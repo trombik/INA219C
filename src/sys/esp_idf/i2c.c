@@ -2,7 +2,7 @@
 #include <esp_log.h>
 #include <driver/i2c.h>
 #include <esp_err.h>
-#include "../INA219C.h"
+#include "../../INA219C.h"
 
 /* I2C implementations for esp-idf */
 
@@ -44,7 +44,7 @@ ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 	r = i2c_master_cmd_begin(I2C_NUM_0, command, 10 / portTICK_PERIOD_MS);
 	i2c_cmd_link_delete(command);
 	if (r != ESP_OK)
-		ESP_LOGE(log_tag, "i2c_master_cmd_begin() failed: %d", r)
+		ESP_LOGE(log_tag, "i2c_master_cmd_begin() failed: %d", r);
 	return r;
 }
 

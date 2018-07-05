@@ -3,8 +3,8 @@
 #include <math.h>
 #include <assert.h>
 
-#if defined(ESP32)
-#include "sys/esp_idf.c"
+#if defined(INA219_I2C_ESP_IDF)
+#include "sys/esp_idf/i2c.c"
 #endif
 
 struct ina219c_dev
