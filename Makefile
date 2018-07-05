@@ -9,4 +9,6 @@ UNIT_TEST_APP :=	$(IDF_PATH)/tools/unit-test-app
 EXTRA_COMPONENT_DIRS=	$(UNIT_TEST_APP)/components
 SDKCONFIG_DEFAULTS=	 $(UNIT_TEST_APP)/sdkconfig.defaults
 
+CFLAGS := -DINA219_I2C_ESP_IDF
+
 include $(UNIT_TEST_APP)/Makefile
