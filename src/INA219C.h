@@ -50,6 +50,7 @@ ina219c_delay_ms(const uint32_t period);
 #define INA219C_REG_BUS_MASK_OVF	(1 << 0)
 #define INA219C_REG_BUS_MASK_BD		(0b1111111111111000)
 
+/* return values of ina219c_conversion_is_ready() */
 #define INA219C_CONVERSION_IS_READY 1
 #define INA219C_CONVERSION_IS_NOT_READY 0
 
@@ -237,9 +238,20 @@ ina219c_get_sadc_value(const struct ina219c_dev *dev, ina219_resolution_t *res);
 int8_t
 ina219c_get_badc_value(const struct ina219c_dev *dev, ina219_resolution_t *res);
 
+/*!
+ * @brief convert complemented value from Shunt Voltage Register
+ * @param[in] v : the complemented value
+ * @param[in] sign_bits : number of SIGN bits
+ * @retval mV * 100
+ */
 int16_t
 ina219c_decomplement(uint16_t v, uint8_t sign_bits);
 
+/*!
+ * @brief return whether conversion is ready or not.
+ * @param[in] *ina219c_dev : Pointer to struct ina219c_dev
+ * @retval INA219C_CONVERSION_IS_READY or INA219C_CONVERSION_IS_NOT_READY
+ */
 int8_t
 ina219c_conversion_is_ready(const struct ina219c_dev *dev);
 
