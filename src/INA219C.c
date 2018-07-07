@@ -332,3 +332,15 @@ ina219c_get_current_register(const struct ina219c_dev *dev, uint16_t *reg_value)
 {
 	return ina219c_read16(dev, INA219C_REG_CURRENT, reg_value);
 }
+
+int8_t
+ina219c_get_current(const struct ina219c_dev *dev, float *current)
+{
+	int8_t r;
+	uint16_t reg_value;
+	r = ina219c_get_current_register(dev, &reg_value);
+	if (r != 0)
+		return r;
+	*current = ina219c_decomplement(reg_value, 1) * ina219c_get_currrent_lsb(dev);
+	return r;
+}
