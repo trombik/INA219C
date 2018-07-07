@@ -19,7 +19,6 @@ int8_t
 ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 {
 	int8_t r = 0;
-	static char log_tag[] = "ina219c_read";
 	i2c_cmd_handle_t command;
 
 	command = i2c_cmd_link_create();
@@ -44,7 +43,7 @@ ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 	r = i2c_master_cmd_begin(I2C_NUM_0, command, 10 / portTICK_PERIOD_MS);
 	i2c_cmd_link_delete(command);
 	if (r != ESP_OK)
-		ESP_LOGE(log_tag, "i2c_master_cmd_begin() failed: %d", r);
+		ESP_LOGE("ina219c_read", "i2c_master_cmd_begin() failed: %d", r);
 	return r;
 }
 
@@ -53,7 +52,6 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 {
 	i2c_cmd_handle_t command;
 	esp_err_t r;
-	static char log_tag[] = "ina219c_write";
 
 	/* read-only registers */
 	assert(
@@ -76,7 +74,7 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 	i2c_cmd_link_delete(command);
 
 	if (r != ESP_OK)
-		ESP_LOGE(log_tag, "i2c_master_cmd_begin() failed: %d", r);
+		ESP_LOGE("ina219c_write", "i2c_master_cmd_begin() failed: %d", r);
 	/* Register contents are updated 4 micro seconds after completion of the write
 	 * command */
 	ina219c_delay_ms(1);
