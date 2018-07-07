@@ -64,6 +64,8 @@ Or any other serial console command, such as `cu(1)`. Make sure:
 
 * path to USB serial device file exists and is correct
   (`CONFIG_ESPTOOLPY_PORT` in `sdkconfig`)
+* the USB serial device has read and write permissions for the current unix
+  user
 * Serial baud rate is correct (115200 baud by default, or
   `CONFIG_MONITOR_BAUD_115200B=y` in `sdkconfig`)
 
@@ -95,4 +97,5 @@ Here's the test menu, pick your combo:
 ...
 ```
 
-Entering the number starts the selected test.
+Entering the number starts the selected test. A special symbol `*` runs all
+tests.
