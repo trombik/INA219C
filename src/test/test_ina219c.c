@@ -47,7 +47,7 @@ TEST_CASE("ina219c_create", component)
 
 TEST_CASE("i2c_init", "[INA219C]")
 {
-	TEST_ASSERT(i2c_init() == 0);
+	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
 }
 
@@ -77,8 +77,8 @@ TEST_CASE("ina219s_set_bits", "[INA219C]")
 {
 
 	dev = ina219c_create(i2c_address);
-	TEST_ASSERT(i2c_init() == 0);
-	TEST_ASSERT(ina219c_reset(&dev) == 0);
+	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
 	TEST_ASSERT_EQUAL_UINT16_MESSAGE(INA219C_REG_CONFIG_DEFAULT, reg_value, "INA219C_REG_CONFIG has INA219C_REG_CONFIG_DEFAULT value");
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bits(&dev, INA219C_REG_CONFIG, (1 << 13), 0));
@@ -88,16 +88,17 @@ TEST_CASE("ina219s_set_bits", "[INA219C]")
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bits(&dev, INA219C_REG_CONFIG, (1 << 13), &reg_value));
 	TEST_ASSERT_EQUAL_UINT16(1, reg_value);
 
-	TEST_ASSERT(ina219c_reset(&dev) == 0);
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
 }
 
 TEST_CASE("ina219c_read16", "[INA219C]")
 {
 	dev = ina219c_create(i2c_address);
-	TEST_ASSERT(i2c_init() == 0);
-	TEST_ASSERT(ina219c_reset(&dev) == 0);
-	TEST_ASSERT(ina219c_read16(&dev, INA219C_REG_CONFIG, &reg_value) == 0);
+	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
+
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CONFIG, &reg_value));
 	TEST_ASSERT_EQUAL_INT16_MESSAGE(INA219C_REG_CONFIG_DEFAULT, reg_value,
 	    "INA219C_REG_CONFIG has default value after reset");
 	TEST_ASSERT_EQUAL(0, ina219c_get_mode(&dev, &mode));
@@ -110,6 +111,8 @@ TEST_CASE("ina219c_read16", "[INA219C]")
 	TEST_ASSERT_EQUAL(INA219C_RESOLUTION_12BIT_1, res);
 	TEST_ASSERT_EQUAL(0, ina219c_get_badc_value(&dev, &res));
 	TEST_ASSERT_EQUAL(INA219C_RESOLUTION_12BIT_1, res);
+
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	i2c_driver_delete(I2C_NUM_0);
 }
 
@@ -118,6 +121,7 @@ TEST_CASE("set_pga_gain", "[INA219C]")
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
+
 	ina219c_pga_gain_t gains[] = {
 		INA219C_PGA_GAIN_40MV,
 		INA219C_PGA_GAIN_80MV,
@@ -142,6 +146,7 @@ TEST_CASE("ina219c_set", "[INA219C]")
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
+
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bus_voltage_range(&dev, INA219C_BUS_VOLTAGE_RANGE_16V));
 	TEST_ASSERT_EQUAL(INA219C_BUS_VOLTAGE_RANGE_16V, ina219c_get_bus_voltage_range(&dev, &range));
 	ina219c_mode modes[] = {
