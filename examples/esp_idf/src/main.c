@@ -45,159 +45,79 @@ i2c_init(const gpio_num_t sda, const gpio_num_t scl)
 void
 task_measure(void * pvParameters)
 {
-	static char log_tag[] = "test";
-	uint16_t data;
+	static char log_tag[] = "task_measure";
 	struct ina219c_dev dev;
-	int8_t r;
-	ina219c_mode mode;
-	ina219c_range range;
-	ina219c_pga_gain_t gain;
+	float v_bus;
+	float v_shunt;
+	float p;
+	float current;
+	ina219c_pga_gain_t gain = INA219C_PGA_GAIN_40MV;
 
 	vTaskDelay(2000 / portTICK_PERIOD_MS);
+	ESP_LOGI(log_tag, "Starting the task");
 
 	dev = ina219c_create(INA219C_ADDRESS);
-	ESP_LOGI(log_tag, "Starting the task");
+	dev.max_expected_i = 1;
 
 	ESP_LOGI(log_tag, "Initialinzing I2C...");
 	i2c_init((gpio_num_t)GPIO_SDA, (gpio_num_t)GPIO_SCL);
 	ESP_LOGI(log_tag, "I2C initialized.");
 
-	ESP_LOGI(log_tag, "ina219c_read16() reads INA219C_REG_CONFIG and returns 0");
-	if (ina219c_read16(&dev, INA219C_REG_CONFIG, &data) != 0) {
-		ESP_LOGE(log_tag, "ina219c_read16() failed.");
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "ina219c_reset() returns 0");
+	ESP_LOGI(log_tag, "Resetting INA219...");
 	if (ina219c_reset(&dev) != 0) {
 		ESP_LOGE(log_tag, "failed to ina219c_reset()");
 		vTaskDelete(NULL);
 	}
-	ESP_LOGI(log_tag, "ina219c_read16() reads INA219C_REG_CONFIG");
-	if (ina219c_read16(&dev, INA219C_REG_CONFIG, &data) != 0) {
-		ESP_LOGE(log_tag, "failed to ina219c_read16()");
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "INA219C_REG_CONFIG has the default value after reset command");
-	if (data != INA219C_REG_CONFIG_DEFAULT) {
-		ESP_LOGW(log_tag, "INA219C_REG_CONFIG is not INA219C_REG_CONFIG_DEFAULT after reset: 0x%x", data);
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "ina219c_get_mode() returns 0");
-	if (ina219c_get_mode(&dev, &mode) != 0) {
-		ESP_LOGE(log_tag, "failed to ina219c_get_mode()");
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "ina219c_get_mode() returns default value");
-	if (mode != INA219C_MODE_SHUNT_BUS_CONTINUOUS) {
-		ESP_LOGE(log_tag, "mode is not INA219C_MODE_SHUNT_BUS_CONTINUOUS: %d", mode);
-		vTaskDelete(NULL);
-	}
-	/*
-	ESP_LOGI(log_tag, "ina219c_get_bus_voltage_range() returns default value, 0x%x", INA219C_BUS_VOLTAGE_RANGE_32V);
-	if (range != INA219C_BUS_VOLTAGE_RANGE_32V) {
-		ESP_LOGE(log_tag, "value is not 0x%x: 0x%x", INA219C_BUS_VOLTAGE_RANGE_32V, range);
-		vTaskDelete(NULL);
-	}
-	*/
+	ESP_LOGI(log_tag, "done resetting INA219");
 
-	ESP_LOGI(log_tag, "ina219c_get_calibration() returns 0");
-	uint16_t value;
-	if (ina219c_get_calibration(&dev, &value) != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_calibration() failed");
+	ESP_LOGI(log_tag, "Setting gain to INA219C_PGA_GAIN_40MV");
+	if (ina219c_set_pga_gain(&dev, gain) != 0) {
+		ESP_LOGE(log_tag, "ina219c_set_pga_gain() failed");
 		vTaskDelete(NULL);
-	} else {
-		ESP_LOGI(log_tag, "calibration value: 0x%x", value);
 	}
+	ESP_LOGI(log_tag, "Calibrating...");
+	if (ina219c_set_calibration(&dev) != 0) {
+		ESP_LOGE(log_tag, "failed to ina219c_set_calibration()");
+		vTaskDelete(NULL);
+	}
+	ESP_LOGI(log_tag, "Calibrated");
 
-	ESP_LOGI(log_tag, "ina219c_get_pga_gain() returns 0");
-	r = ina219c_get_pga_gain(&dev, &gain);
-	if (r != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_pga_gain() failed: %d", r);
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "PGA gain is INA219C_PGA_GAIN_320MV (default)");
-	if (gain != INA219C_PGA_GAIN_320MV) {
-		ESP_LOGE(log_tag, "gain is not INA219C_PGA_GAIN_320MV: 0x%x", gain);
-		vTaskDelete(NULL);
-	}
-
-	ina219_resolution_t res;
-	ESP_LOGI(log_tag, "ina219c_get_sadc_value() returns 0");
-	if (ina219c_get_sadc_value(&dev, &res) != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_sadc_value() failed");
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "ina219c_get_sadc_value() returns default value");
-	if (res != INA219C_RESOLUTION_12BIT_1) {
-		ESP_LOGE(log_tag, "resolution is not INA219C_RESOLUTION_12BIT_1 0x%x", res);
-		vTaskDelete(NULL);
-	}
-
-	ESP_LOGI(log_tag, "ina219c_get_badc_value() returns 0");
-	if (ina219c_get_badc_value(&dev, &res) != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_badc_value() failed");
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "ina219c_get_badc_value() returns default value");
-	if (res != INA219C_RESOLUTION_12BIT_1) {
-		ESP_LOGE(log_tag, "resolution is not INA219C_RESOLUTION_12BIT_1 0x%x", res);
-		vTaskDelete(NULL);
-	}
-	ESP_LOGI(log_tag, "decomplement() returns 32000");
-	if (ina219c_decomplement(0b1000001100000000, 1) != -32000) {
-		ESP_LOGE(log_tag, "decomplement() failed: %d", ina219c_decomplement(0b1000001100000000, 1));
-		vTaskDelete(NULL);
-	}
-
-
-	ESP_LOGI(log_tag, "ina219c_set_bus_voltage_range() returns 0");
-	range = INA219C_BUS_VOLTAGE_RANGE_16V;
-	r = ina219c_set_bus_voltage_range(&dev, range);
-	if (r != 0) {
-		ESP_LOGE(log_tag, "ina219c_set_bus_voltage_range() failed: %d", r);
-		vTaskDelete(NULL);
-	}
-	if (ina219c_get_bus_voltage_range(&dev, &range) != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_bus_voltage_range() failed");
-		vTaskDelete(NULL);
-	}
-	if (range != (ina219c_range)INA219C_BUS_VOLTAGE_RANGE_16V) {
-		ESP_LOGE("log_tag", "range is not INA219C_BUS_VOLTAGE_RANGE_16V: 0x%x", range);
-		vTaskDelete(NULL);
-	}
-	ina219c_mode modes[8] = {
-		INA219C_MODE_POWERDOWN,
-		INA219C_MODE_SHUNT_TRIGGERED,
-		INA219C_MODE_BUS_TRIGGERED,
-		INA219C_MODE_SHUNT_BUS_TRIGGERED,
-		INA219C_MODE_ADC_OFF,
-		INA219C_MODE_SHUNT_CONTINUOUS,
-		INA219C_MODE_BUS_CONTINUOUS,
-		INA219C_MODE_SHUNT_BUS_CONTINUOUS
-	};
-	for (uint8_t i = 0; i <= sizeof(modes) / sizeof(modes[0]) - 1; i++) {
-		ESP_LOGI(log_tag, "ina219c_get_mode() sets mode 0x%x", modes[i]);
-		if (ina219c_set_mode(&dev, modes[i]) != 0) {
-			ESP_LOGE(log_tag, "ina219c_get_mode() failed");
-			vTaskDelete(NULL);
+	ESP_LOGI(log_tag, "Waiting for conversion to be ready...");
+	for (uint8_t i = 0; i <= 100; i++) {
+		if (i == 100) {
+			ESP_LOGE(log_tag, "Timeout while ina219c_conversion_is_ready()");
 		}
-		if (ina219c_get_mode(&dev, &mode) != 0) {
-			ESP_LOGE(log_tag, "ina219c_get_mode() failed");
-			vTaskDelete(NULL);
-		}
-		if (mode != modes[i]) {
-			ESP_LOGE(log_tag, "expected mode 0x%x got 0x%x", mode, modes[i]);
-			vTaskDelete(NULL);
+		if (ina219c_conversion_is_ready(&dev) == INA219C_CONVERSION_IS_READY) {
+			break;
 		}
 	}
-	ESP_LOGI(log_tag, "ina219c_get_bus_voltage_range() returns 0");
-	if (ina219c_get_bus_voltage_range(&dev, &range) != 0) {
-		ESP_LOGE(log_tag, "ina219c_get_bus_voltage_range() failed");
-		vTaskDelete(NULL);
-	}
+	ESP_LOGI(log_tag, "conversion is now ready");
 
-	ESP_LOGI(log_tag, "All tests passed");
 	for(;;) {
+		if (ina219c_get_bus_voltage(&dev, &v_bus) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219c_get_bus_voltage()");
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
+			continue;
+		}
+		ESP_LOGI(log_tag, "Vbus: %f", v_bus);
+		if (ina219c_get_shunt_voltage(&dev, &v_shunt) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219c_get_shunt_voltage()");
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
+			continue;
+		}
+		ESP_LOGI(log_tag, "Vshunt: %f", v_shunt);
+		if (ina219c_get_power(&dev, &p) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219c_get_power()");
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
+			continue;
+		}
+		ESP_LOGI(log_tag, "Power: %f", p);
+		if (ina219c_get_current(&dev, &current) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219c_get_current()");
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
+			continue;
+		}
+		ESP_LOGI(log_tag, "Current: %f", current);
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 }
