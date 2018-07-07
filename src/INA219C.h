@@ -37,23 +37,21 @@ ina219c_delay_ms(const uint32_t period);
 #define INA219C_REG_CURRENT	(0x04)
 #define INA219C_REG_CALIBRATION	(0x05)
 
-/* INA219C_REG_CONFIG */
-
-/* bit positions in INA219C_REG_CONFIG */
-#define INA219C_REG_CONfIG_BIT_MODE	(0)
-#define INA219C_REG_CONfIG_BIT_SADC	(3)
-#define INA219C_REG_CONfIG_BIT_BADC	(7)
-#define INA219C_REG_CONfIG_BIT_PG	(11)
-#define INA219C_REG_CONfIG_BIT_BRNG	(13)
-#define INA219C_REG_CONfIG_BIT_RESET	(15)
-
 /* masks for configuration bits */
-#define INA219C_REG_CONfIG_MASK_MODE	(1 << 0 | 1 << 1 | 1 << 2)
-#define INA219C_REG_CONfIG_MASK_SDAC	(1 << 3 | 1 << 4 | 1 << 5 | 1 << 6)
-#define INA219C_REG_CONfIG_MASK_BADC	(1 << 7 | 1 << 8 | 1 << 9 | 1 << 10)
-#define INA219C_REG_CONfIG_MASK_PG	(1 << 11 | 1 << 12)
-#define INA219C_REG_CONfIG_MASK_BRNG	(1 << 13)
-#define INA219C_REG_CONfIG_MASK_RESET	(1 << 15)
+#define INA219C_REG_CONFIG_MASK_MODE	(1 << 0 | 1 << 1 | 1 << 2)
+#define INA219C_REG_CONFIG_MASK_SDAC	(1 << 3 | 1 << 4 | 1 << 5 | 1 << 6)
+#define INA219C_REG_CONFIG_MASK_BADC	(1 << 7 | 1 << 8 | 1 << 9 | 1 << 10)
+#define INA219C_REG_CONFIG_MASK_PG	(1 << 11 | 1 << 12)
+#define INA219C_REG_CONFIG_MASK_BRNG	(1 << 13)
+#define INA219C_REG_CONFIG_MASK_RESET	(1 << 15)
+
+/* masks for bus voltage register */
+#define INA219C_REG_BUS_MASK_CNVR	(1 << 1)
+#define INA219C_REG_BUS_MASK_OVF	(1 << 0)
+#define INA219C_REG_BUS_MASK_BD		(0b1111111111111000)
+
+#define INA219C_CONVERSION_IS_READY 1
+#define INA219C_CONVERSION_IS_NOT_READY 0
 
 /* default value of INA219C_REG_CONFIG */
 #define INA219C_REG_CONFIG_DEFAULT	(0x399F)
@@ -253,4 +251,16 @@ ina219c_get_bus_voltage(const struct ina219c_dev *dev, float *voltage);
 
 float
 ina219c_get_currrent_lsb(const struct ina219c_dev *dev);
+
+int8_t
+ina219c_get_current_register(const struct ina219c_dev *dev, uint16_t *value);
+
+int8_t
+ina219c_get_shunt_voltage(const struct ina219c_dev *dev, float *milliv);
+
+int8_t
+ina219c_get_bits(const struct ina219c_dev *dev, const uint8_t reg, const uint16_t mask, uint16_t *value);
+
+int8_t
+__ina219c_get_bits_from_mask(uint16_t mask);
 #endif
