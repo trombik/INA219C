@@ -275,4 +275,10 @@ ina219c_get_bits(const struct ina219c_dev *dev, const uint8_t reg, const uint16_
 
 int8_t
 __ina219c_get_bits_from_mask(uint16_t mask);
+
+int8_t
+ina219c_get_power(const struct ina219c_dev *dev, float *power);
+
+int8_t
+ina219c_get_current(const struct ina219c_dev *dev, float *current);
 #endif
