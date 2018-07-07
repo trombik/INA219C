@@ -58,6 +58,7 @@ env:
 addons:
   apt:
     packages:
+      - cppcheck
       - make
       - wget
       - libncurses-dev
@@ -77,6 +78,7 @@ before_script:
   - git clone --single-branch -b v3.1-beta1 https://github.com/espressif/esp-idf.git ~/esp-idf
 
 script:
+  - cppcheck --error-exitcode=1 --enable=warning,style,performance,portability -v --language=c src/*.c
   - make defconfig
   - make TEST_COMPONENTS="INA219C"
   - PLATFORMIO_CI_SRC=examples/esp_idf/src pio ci --lib . --project-conf examples/esp_idf/platformio.ini
