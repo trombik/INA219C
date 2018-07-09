@@ -1,6 +1,10 @@
 #if !defined(_INA219C_h)
 #define _INA219C_h
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 /* read and write functions that must be implemented.
@@ -277,4 +281,9 @@ ina219c_configure(struct ina219c_dev * dev);
 
 int8_t
 ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage);
+
+#if defined(__cplusplus)
+}
+#endif
+
 #endif

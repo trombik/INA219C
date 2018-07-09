@@ -1,3 +1,4 @@
+#if defined(INA219_I2C_ESP_IDF)
 #include <stdint.h>
 #include <esp_log.h>
 #include <driver/i2c.h>
@@ -80,3 +81,4 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 	ina219c_delay_ms(1);
 	return r;
 }
+#endif
