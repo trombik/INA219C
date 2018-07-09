@@ -45,7 +45,7 @@ ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, ui
 #if defined(ARDUINO_ARCH_AVR)
 	if (Wire.requestFrom(dev_id, (uint8_t)len, (uint8_t)WITH_STOP) != len)
 #else
-	if (Wire.requestFrom(dev_id, (size_t)len, WITH_STOP) != len)
+	if (Wire.requestFrom(dev_id, (uint8_t)len, WITH_STOP) != len)
 #endif
 		return -1;
 	for (uint16_t i = 0; i <= len - 1; i++) {
