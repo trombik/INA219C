@@ -96,7 +96,7 @@ ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range *rang
 	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_BRNG, &reg_value);
 	if (r != 0)
 		return r;
-	*range = reg_value;
+	*range = (ina219c_range)reg_value;
 	return r;
 }
 
@@ -168,7 +168,7 @@ ina219c_get_pga_gain(const struct ina219c_dev *dev, ina219c_pga_gain_t *gain)
 	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_PG, &value);
 	if (r != 0)
 		return r;
-	*gain = value;
+	*gain = (ina219c_pga_gain_t)value;
 	return r;
 }
 
