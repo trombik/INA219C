@@ -232,25 +232,11 @@ int8_t
 ina219c_get_bus_voltage(const struct ina219c_dev *dev, float *voltage)
 {
 	int8_t r;
-	uint16_t reg_value;
-	uint16_t max = 0;
-	ina219c_range range;
-	r = ina219c_read16(dev, INA219C_REG_BUS, &reg_value);
+	uint16_t bus_voltage_raw;
+	r = ina219c_read16(dev, INA219C_REG_BUS, &bus_voltage_raw);
 	if (r != 0)
 		return r;
-	r = ina219c_get_bus_voltage_range(dev, &range);
-	if (r != 0)
-		return r;
-	switch (range) {
-	case INA219C_BUS_VOLTAGE_RANGE_16V:
-		max = 0x0FA0;
-		break;
-	case INA219C_BUS_VOLTAGE_RANGE_32V:
-		max = 0x1F40;
-		break;
-	}
-	assert(max != 0);
-	*voltage = (float)(reg_value >> 3) / max;
+	*voltage = (float)(bus_voltage_raw >> 3) * 0.004 ; // in V (LSB 4mV)
 	return r;
 }
 
@@ -258,11 +244,11 @@ int8_t
 ina219c_get_power(const struct ina219c_dev *dev, float *power)
 {
 	int8_t r;
-	uint16_t reg_value;
-	r = ina219c_read16(dev, INA219C_REG_POWER, &reg_value);
+	uint16_t power_raw;
+	r = ina219c_read16(dev, INA219C_REG_POWER, &power_raw);
 	if (r != 0)
 		return r;
-	*power = (float)(dev->current_lsb * 20 * reg_value);
+	*power = (float)(dev->power_lsb * power_raw);
 	return r;
 }
 
@@ -289,35 +275,15 @@ ina219c_get_current(const struct ina219c_dev *dev, float *current)
 }
 
 int8_t
-ina219c_get_sensor_values(struct ina219c_dev *dev)
+ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage)
 {
 	int8_t r;
 	uint8_t sign_bits = 0;
-	uint8_t buffer[2];
 	uint16_t shunt_voltage_raw;
-	uint16_t bus_voltage_raw;
-	uint16_t power_raw;
-	uint16_t current_raw;
 
-	r = dev->read(dev->address, INA219C_REG_SHUNT, buffer, 2);
+	r = ina219c_read16(dev, INA219C_REG_SHUNT, &shunt_voltage_raw);
 	if (r != 0)
 		return r;
-	shunt_voltage_raw =	(buffer[0] << 8) | buffer[1];
-
-	r = dev->read(dev->address, INA219C_REG_BUS, buffer, 2);
-	if (r != 0)
-		return r;
-	bus_voltage_raw =	(buffer[0] << 8) | buffer[1];
-
-	r = dev->read(dev->address, INA219C_REG_POWER, buffer, 2);
-	if (r != 0)
-		return r;
-	power_raw =		(buffer[0] << 8) | buffer[1];
-
-	r = dev->read(dev->address, INA219C_REG_CURRENT, buffer, 2);
-	if (r != 0)
-		return r;
-	current_raw =		(buffer[0] << 8) | buffer[1];
 
 	switch (dev->gain) {
 	case INA219C_PGA_GAIN_320MV:
@@ -333,20 +299,31 @@ ina219c_get_sensor_values(struct ina219c_dev *dev)
 		sign_bits = 4;
 		break;
 	}
-
 	assert(sign_bits != 0);
-	assert(dev->current_lsb != 0);
-	assert(dev->power_lsb != 0);
-
-	dev->shunt_voltage = ((shunt_voltage_raw >> 15) == 1)
+	*shunt_voltage = ((shunt_voltage_raw >> 15) == 1)
 	    ? (float)ina219c_decomplement(shunt_voltage_raw, sign_bits) / 100000.0
 	    : (float)shunt_voltage_raw / 100000.0; // in V (LSB 10uV)
+	return r;
+}
 
-	dev->bus_voltage = (float)(bus_voltage_raw >> 3) * 0.004 ; // in V (LSB 4mV)
-	dev->power = power_raw * dev->power_lsb; // in W
-	dev->current = current_raw * dev->current_lsb; // in A
+int8_t
+ina219c_get_sensor_values(struct ina219c_dev *dev)
+{
+	int8_t r;
+
+	r = ina219c_get_shunt_voltage(dev, &(dev->shunt_voltage));
+	if (r != 0)
+		return r;
+	r = ina219c_get_bus_voltage(dev, &(dev->bus_voltage));
+	if (r != 0)
+		return r;
+	r = ina219c_get_power(dev, &(dev->power)); // in W
+	if (r != 0)
+		return r;
+	r = ina219c_get_current(dev, &(dev->current));
+	if (r != 0)
+		return r;
 	return 0;
-
 }
 
 struct ina219c_dev
