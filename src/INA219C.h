@@ -274,4 +274,7 @@ ina219c_get_sensor_values(struct ina219c_dev *dev);
 
 int8_t
 ina219c_configure(struct ina219c_dev * dev);
+
+int8_t
+ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage);
 #endif
