@@ -277,14 +277,18 @@ TEST_CASE("ina219c_get_sensor_values", "[INA219C]")
 	 *
 	 * Bus Voltage:   3.30 V
 	 * Shunt Voltage: 0.13 mV
-	 * Load Voltage:  3.30 V
-	 * Current:       1.30 mA
 	 * Power:         4.00 mW
+	 * Current:       1.30 mA
 	 */
 	ESP_LOGI(__func__, "bus_voltage: %0.2fV", dev.bus_voltage);
 	ESP_LOGI(__func__, "shunt_voltage: %0.2fmV", dev.shunt_voltage * 1000);
 	ESP_LOGI(__func__, "power: %0.2fmW", dev.power * 1000);
 	ESP_LOGI(__func__, "current: %0.2fmA", dev.current * 1000);
+
+	TEST_ASSERT_INT8_WITHIN(3, 33, (int8_t)(dev.bus_voltage * 10));
+	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.shunt_voltage * 1000 * 100));
+	TEST_ASSERT_INT8_WITHIN(1,  4, (int8_t)(dev.power * 1000));
+	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.current * 1000 * 10));
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	i2c_driver_delete(I2C_NUM_0);
