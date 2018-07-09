@@ -51,7 +51,6 @@ task_measure(void * pvParameters)
 	float v_shunt;
 	float p;
 	float current;
-	ina219c_pga_gain_t gain = INA219C_PGA_GAIN_40MV;
 
 	vTaskDelay(2000 / portTICK_PERIOD_MS);
 	ESP_LOGI(log_tag, "Starting the task");
@@ -70,11 +69,14 @@ task_measure(void * pvParameters)
 	}
 	ESP_LOGI(log_tag, "done resetting INA219");
 
-	ESP_LOGI(log_tag, "Setting gain to INA219C_PGA_GAIN_40MV");
-	if (ina219c_set_pga_gain(&dev, gain) != 0) {
-		ESP_LOGE(log_tag, "ina219c_set_pga_gain() failed");
+	dev.gain = INA219C_PGA_GAIN_40MV;
+	ESP_LOGI(log_tag, "Configuring...");
+	if (ina219c_configure(&dev) != 0) {
+		ESP_LOGE(log_tag, "Failed to ina219c_configure()");
 		vTaskDelete(NULL);
 	}
+	ESP_LOGI(log_tag, "Done Configuring");
+
 	ESP_LOGI(log_tag, "Calibrating...");
 	if (ina219c_set_calibration(&dev) != 0) {
 		ESP_LOGE(log_tag, "failed to ina219c_set_calibration()");
