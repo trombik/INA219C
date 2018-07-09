@@ -11,18 +11,6 @@
  */
 typedef int8_t (*ina219c_fptr_t) (const uint8_t addr, const uint8_t reg_addr, uint8_t *data, uint8_t len);
 
-struct ina219c_dev {
-	/*! I2C address */
-	uint8_t address;
-	/* framework-dependant function pointers */
-	ina219c_fptr_t read;
-	ina219c_fptr_t write;
-	/* maximum expected current in Amps */
-	float max_expected_i;
-	/* Shunt register value in Ohms */
-	float shunt_r;
-};
-
 void
 ina219c_delay_ms(const uint32_t period);
 
@@ -39,7 +27,7 @@ ina219c_delay_ms(const uint32_t period);
 
 /* masks for configuration bits */
 #define INA219C_REG_CONFIG_MASK_MODE	(1 << 0 | 1 << 1 | 1 << 2)
-#define INA219C_REG_CONFIG_MASK_SDAC	(1 << 3 | 1 << 4 | 1 << 5 | 1 << 6)
+#define INA219C_REG_CONFIG_MASK_SADC	(1 << 3 | 1 << 4 | 1 << 5 | 1 << 6)
 #define INA219C_REG_CONFIG_MASK_BADC	(1 << 7 | 1 << 8 | 1 << 9 | 1 << 10)
 #define INA219C_REG_CONFIG_MASK_PG	(1 << 11 | 1 << 12)
 #define INA219C_REG_CONFIG_MASK_BRNG	(1 << 13)
@@ -53,6 +41,10 @@ ina219c_delay_ms(const uint32_t period);
 /* return values of ina219c_conversion_is_ready() */
 #define INA219C_CONVERSION_IS_READY 1
 #define INA219C_CONVERSION_IS_NOT_READY 0
+
+/* return values of ina219c_conversion_is_overflowed() */
+#define INA219C_IS_OVERFLOWED	1
+#define INA219C_IS_NOT_OVERFLOWED	1
 
 /* default value of INA219C_REG_CONFIG */
 #define INA219C_REG_CONFIG_DEFAULT	(0x399F)
@@ -76,7 +68,7 @@ typedef enum
 	INA219C_RESOLUTION_9BIT_1	= 0b0000,
 	INA219C_RESOLUTION_10BIT_1	= 0b0001,
 	INA219C_RESOLUTION_11BIT_1	= 0b0010,
-	INA219C_RESOLUTION_12BIT_1	= 0b0011,
+	INA219C_RESOLUTION_12BIT_1	= 0b0011, /* default */
 	INA219C_RESOLUTION_12BIT_2	= 0b1001,
 	INA219C_RESOLUTION_12BIT_4	= 0b1010,
 	INA219C_RESOLUTION_12BIT_8	= 0b1011,
@@ -95,8 +87,36 @@ typedef enum
 	INA219C_MODE_ADC_OFF			= 0b100,
 	INA219C_MODE_SHUNT_CONTINUOUS		= 0b101,
 	INA219C_MODE_BUS_CONTINUOUS		= 0b110,
-	INA219C_MODE_SHUNT_BUS_CONTINUOUS	= 0b111,
+	INA219C_MODE_SHUNT_BUS_CONTINUOUS	= 0b111, /* default */
 } ina219c_mode;
+
+struct ina219c_dev {
+	/*! I2C address */
+	uint8_t address;
+	/* framework-dependant function pointers */
+	ina219c_fptr_t read;
+	ina219c_fptr_t write;
+	/* maximum expected current in Amps */
+	float max_expected_i;
+	/* Shunt register value in Ohms */
+	float shunt_r;
+	/* calibration value */
+	uint16_t cal;
+
+	ina219c_pga_gain_t gain;
+	float current_lsb;
+	float power_lsb;
+	float max_possible_i;
+
+	ina219c_range range;
+	float shunt_voltage;
+	float bus_voltage;
+	float power;
+	float current;
+	ina219_resolution_t bus_adc_resolution;
+	ina219_resolution_t shunt_adc_resolution;
+	ina219c_mode mode;
+};
 
 /*!
  * @brief Create struct ina219c_dev.
@@ -135,7 +155,7 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
  * @brief Writes two bytes to a register
  */
 int8_t
-ina219c_write16(const struct ina219c_dev *ina219_dev, const uint8_t reg, uint16_t *data);
+ina219c_write16(const struct ina219c_dev *ina219_dev, const uint8_t reg, const uint16_t *data);
 
 /*!
  * @brief Read 2bytes from a regsiter
@@ -146,16 +166,6 @@ ina219c_write16(const struct ina219c_dev *ina219_dev, const uint8_t reg, uint16_
  */
 int8_t
 ina219c_read16(const struct ina219c_dev *ina219_dev, const uint8_t reg, uint16_t *data);
-
-/*!
- * @brief Write a byte to a regsiter
- *
- * @param[in] *ina219c_dev : A pointer to struct ina219_dev
- * @param[in] reg : Register address
- * @param[in] *data : A pointer to a variable to store the value
- */
-int8_t
-ina219c_read8(struct ina219c_dev *ina219_dev, const uint8_t reg, uint8_t *data);
 
 /*!
  * @brief Write one or more bits to the register, verify the result.
@@ -175,15 +185,6 @@ int8_t
 ina219c_reset(struct ina219c_dev *dev);
 
 /*!
- * @brief Set operating mode
- *
- * @param[in] *ina219c_dev : A pointer to struct ina219_dev
- * @param[in] mode: one of ina219c_mode
- */
-int8_t
-ina219c_set_mode(const struct ina219c_dev *dev, const ina219c_mode mode);
-
-/*!
  * @brief Get operating mode
  * @param[in] *ina219c_dev : A pointer to struct ina219_dev
  * @param[out] *mode : A pointer to a variable to store one of ina219c_mode
@@ -200,26 +201,18 @@ int8_t
 ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range *range);
 
 /*!
- * @brief Set Bus Voltage Range to range
- * @param[in] *ina219c_dev : A pointer to struct ina219_dev
- * @param[in] range : one of ina219c_range
- */
-int8_t
-ina219c_set_bus_voltage_range(const struct ina219c_dev *dev, const ina219c_range range);
-
-/*!
  * @brief Caribrate the sensor.
  * @param[in] *ina219c_dev : Pointer to struct ina219c_dev
  */
 int8_t
-ina219c_set_calibration(const struct ina219c_dev *dev);
+ina219c_set_calibration(struct ina219c_dev *dev);
 
 /*!
  * @brief Get INA219C_REG_CALIBRATION value
  * @param[in] *ina219c_dev : Pointer to struct ina219c_dev
  */
 int8_t
-ina219c_get_calibration(const struct ina219c_dev *dev, uint16_t *value);
+ina219c_get_calibration(struct ina219c_dev *dev, uint16_t *value);
 
 /*!
  * @brief Get PGA gain value
@@ -228,9 +221,6 @@ ina219c_get_calibration(const struct ina219c_dev *dev, uint16_t *value);
  */
 int8_t
 ina219c_get_pga_gain(const struct ina219c_dev *dev, ina219c_pga_gain_t *gain);
-
-int8_t
-ina219c_set_pga_gain(const struct ina219c_dev *dev, const ina219c_pga_gain_t gain);
 
 int8_t
 ina219c_get_sadc_value(const struct ina219c_dev *dev, ina219_resolution_t *res);
@@ -261,24 +251,27 @@ ina219c_conversion_is_overflowed(const struct ina219c_dev *dev);
 int8_t
 ina219c_get_bus_voltage(const struct ina219c_dev *dev, float *voltage);
 
-float
-ina219c_get_currrent_lsb(const struct ina219c_dev *dev);
-
 int8_t
 ina219c_get_current_register(const struct ina219c_dev *dev, uint16_t *value);
 
 int8_t
-ina219c_get_shunt_voltage(const struct ina219c_dev *dev, float *milliv);
-
-int8_t
 ina219c_get_bits(const struct ina219c_dev *dev, const uint8_t reg, const uint16_t mask, uint16_t *value);
 
-int8_t
-__ina219c_get_bits_from_mask(uint16_t mask);
+uint8_t
+ina219c_get_bits_from_mask(uint16_t mask);
 
 int8_t
 ina219c_get_power(const struct ina219c_dev *dev, float *power);
 
 int8_t
 ina219c_get_current(const struct ina219c_dev *dev, float *current);
+
+int8_t
+ina219c_calc_calibration(struct ina219c_dev *dev);
+
+int8_t
+ina219c_get_sensor_values(struct ina219c_dev *dev);
+
+int8_t
+ina219c_configure(struct ina219c_dev * dev);
 #endif
