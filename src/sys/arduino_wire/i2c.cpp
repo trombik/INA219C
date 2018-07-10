@@ -1,13 +1,5 @@
 #if defined(_INA219C_Arduino_Wire_h)
 
-#if defined(ARDUINO_ARCH_AVR)
-#define WITH_STOP 1
-#define WITHOUT_STOP 0
-#else
-#define WITH_STOP true
-#define WITHOUT_STOP false
-#endif
-
 #define WITH_REPEATED_START false
 #define WITHOUT_REPEATED_START true
 
@@ -32,6 +24,7 @@ int8_t
 ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
 	int8_t result = 0;
+	const static uint8_t WITH_STOP_BIT = 1;
 
 	/* start transaction */
 	Wire.beginTransmission(dev_id);
@@ -42,11 +35,7 @@ ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, co
 	result = Wire.endTransmission(WITH_REPEATED_START);
 	if (result != 0)
 		return result;
-#if defined(ARDUINO_ARCH_AVR)
-	if (Wire.requestFrom(dev_id, (uint8_t)len, (uint8_t)WITH_STOP) != len)
-#else
-	if (Wire.requestFrom(dev_id, (uint8_t)len, WITH_STOP) != len)
-#endif
+	if (Wire.requestFrom(dev_id, len, WITH_STOP_BIT) != len)
 		return -1;
 	for (uint16_t i = 0; i <= len - 1; i++) {
 		reg_data[i] = Wire.read();
