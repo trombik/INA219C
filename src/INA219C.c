@@ -35,14 +35,14 @@ ina219c_reset(struct ina219c_dev *dev)
 }
 
 int8_t
-ina219c_get_mode(const struct ina219c_dev *dev, ina219c_mode *mode)
+ina219c_get_mode(const struct ina219c_dev *dev, ina219c_mode_t *mode)
 {
 	int8_t r;
 	uint16_t value;
 	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_MODE, &value);
 	if (r != 0)
 		return r;
-	*mode = (ina219c_mode)value;
+	*mode = (ina219c_mode_t)value;
 	return 0;
 }
 
@@ -87,14 +87,14 @@ ina219c_set_bits(const struct ina219c_dev *dev, const uint8_t reg, const uint16_
 }
 
 int8_t
-ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range *range)
+ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range_t *range)
 {
 	uint8_t r;
 	uint16_t reg_value;
 	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_BRNG, &reg_value);
 	if (r != 0)
 		return r;
-	*range = (ina219c_range)reg_value;
+	*range = (ina219c_range_t)reg_value;
 	return r;
 }
 

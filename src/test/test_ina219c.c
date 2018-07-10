@@ -11,8 +11,8 @@
 struct ina219c_dev dev;
 const uint8_t i2c_address = 0x40;
 uint16_t reg_value;
-ina219c_mode mode;
-ina219c_range range;
+ina219c_mode_t mode;
+ina219c_range_t range;
 ina219c_pga_gain_t gain;
 ina219_resolution_t res;
 float voltage;
@@ -104,7 +104,7 @@ TEST_CASE("ina219c_read16", "[INA219C]")
 	TEST_ASSERT_EQUAL(0, ina219c_get_mode(&dev, &mode));
 	TEST_ASSERT_EQUAL(INA219C_MODE_SHUNT_BUS_CONTINUOUS, mode);
 	TEST_ASSERT_EQUAL(0, ina219c_get_bus_voltage_range(&dev, &range));
-	TEST_ASSERT_EQUAL((ina219c_range)INA219C_BUS_VOLTAGE_RANGE_32V, range);
+	TEST_ASSERT_EQUAL((ina219c_range_t)INA219C_BUS_VOLTAGE_RANGE_32V, range);
 	TEST_ASSERT_EQUAL(0, ina219c_get_pga_gain(&dev, &gain));
 	TEST_ASSERT_EQUAL(INA219C_PGA_GAIN_320MV, gain);
 	TEST_ASSERT_EQUAL(0, ina219c_get_sadc_value(&dev, &res));
@@ -150,7 +150,7 @@ TEST_CASE("ina219c_set", "[INA219C]")
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
 	TEST_ASSERT_EQUAL(INA219C_BUS_VOLTAGE_RANGE_16V, ina219c_get_bus_voltage_range(&dev, &range));
-	ina219c_mode modes[] = {
+	ina219c_mode_t modes[] = {
 		INA219C_MODE_POWERDOWN,
 		INA219C_MODE_SHUNT_TRIGGERED,
 		INA219C_MODE_BUS_TRIGGERED,

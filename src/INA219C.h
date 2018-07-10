@@ -60,7 +60,7 @@ typedef enum
 {
 	INA219C_BUS_VOLTAGE_RANGE_16V	= 0b00, /**< 16V */
 	INA219C_BUS_VOLTAGE_RANGE_32V	= 0b01  /**< 21V, default */
-} ina219c_range;
+} ina219c_range_t;
 
 /*!
  * @brief Gain of PGA Function
@@ -108,7 +108,7 @@ typedef enum
 	INA219C_MODE_SHUNT_CONTINUOUS		= 0b101,
 	INA219C_MODE_BUS_CONTINUOUS		= 0b110,
 	INA219C_MODE_SHUNT_BUS_CONTINUOUS	= 0b111, /* default */
-} ina219c_mode;
+} ina219c_mode_t;
 
 /*!
  * @brief A struct representing the device
@@ -117,11 +117,11 @@ struct ina219c_dev {
 	uint8_t address; /**< I2C address (RW) */
 	float max_expected_i; /**< Maximum expected current in Amps (RW) */
 	float shunt_r; /**< Shunt register value in Ohms (RW) */
-	ina219c_range range; /**< Bus Voltage range (RW) */
+	ina219c_range_t range; /**< Bus Voltage range (RW) */
 	ina219c_pga_gain_t gain; /**< PGA gain (RW) */
 	ina219_resolution_t bus_adc_resolution; /**< Bus ADC resolution (RW) */
 	ina219_resolution_t shunt_adc_resolution; /** Shunt ADC resolution (RW) */
-	ina219c_mode mode; /**< Operaion mode (RW) */
+	ina219c_mode_t mode; /**< Operaion mode (RW) */
 
 	float shunt_voltage; /**< Shunt volatage in V (RO) */
 	float bus_voltage; /**< Bus voltage in V (RO) */
@@ -228,18 +228,18 @@ ina219c_reset(struct ina219c_dev *dev);
 /*!
  * @brief Get operating mode
  * @param[in] *ina219c_dev : A pointer to struct ina219_dev
- * @param[out] *mode : A pointer to a variable to store one of ina219c_mode
+ * @param[out] *mode : A pointer to a variable to store one of ina219c_mode_t
  */
 int8_t
-ina219c_get_mode(const struct ina219c_dev *dev, ina219c_mode *mode);
+ina219c_get_mode(const struct ina219c_dev *dev, ina219c_mode_t *mode);
 
 /*!
  * @brief Get Bus Voltage Range
  * @param[in] *ina219c_dev : A pointer to struct ina219_dev
- * @param[out] range : one of ina219c_range
+ * @param[out] range : one of ina219c_range_t
  */
 int8_t
-ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range *range);
+ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range_t *range);
 
 /*!
  * @brief Caribrate the sensor.
