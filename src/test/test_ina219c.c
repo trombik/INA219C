@@ -188,7 +188,7 @@ TEST_CASE("ina219c_regular_use_case", "[INA219C]")
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_current_register(&dev, &reg_value));
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CURRENT, &reg_value));
 	TEST_ASSERT_EQUAL_UINT16_MESSAGE(0, reg_value, "after reset INA219C_REG_CURRENT is supposed to be zero");
 
 	dev.gain = INA219C_PGA_GAIN_40MV;
