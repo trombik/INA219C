@@ -11,12 +11,49 @@ Include one of header files below.
 | `INA219C_ESP_IDF.h` | `esp-idf` | Native I2C API |
 | `INA219C_Arduino_Wire.h` | `arduino` | `Wire` |
 
+## Usage
+
+Configure `I2C` bus, such as `i2c_param_config()`, or `Wire.begin()`. The
+library does not do that for you.
+
+Create `struct` `ina219c_dev` by `ina219c_create()`. The `struct` has some
+default values configured.
+
+Set the configurations in the `struct` to Configuration Register by
+`ina219c_configure()`.
+
+Set calibration value to Calibration Register by `ina219c_set_calibration`. At
+this point, the device is ready for measurement.
+
+Read all the values from the device by `ina219c_get_sensor_values`. The values
+are saved in the `struct`.
+
+```c
+/*
+ * configure I2C here
+ */
+
+struct ina219c_dev dev;
+dev = ina219c_create(0x40);
+ina219c_configure(&dev);
+ina219c_set_calibration(&dev);
+ina219c_get_sensor_values(&dev);
+
+/*
+ * do something with dev.current, dev.power, etc ...
+ */
+```
+
+For more functions, see [src/INA219C.h](src/INA219C.h).
+
+Examples can be found under [examples](examples).
+
 ## Unit testing
 
 ### Hardware
 
 * ESP32 development board
-* INA219
+* INA219 breakout board
 * A pair of pull-up registers for I2C bus
 * A breadboard and some jumper wires
 
