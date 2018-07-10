@@ -17,7 +17,7 @@ ina219c_delay_ms(const uint32_t period)
 }
 
 int8_t
-ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
+ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
 	int8_t r = 0;
 	i2c_cmd_handle_t command;
@@ -49,7 +49,7 @@ ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
 }
 
 int8_t
-ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len)
+ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
 	i2c_cmd_handle_t command;
 	esp_err_t r;
