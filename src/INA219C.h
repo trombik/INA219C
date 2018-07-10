@@ -48,7 +48,7 @@ ina219c_delay_ms(const uint32_t period);
 
 /* return values of ina219c_conversion_is_overflowed() */
 #define INA219C_IS_OVERFLOWED	1
-#define INA219C_IS_NOT_OVERFLOWED	1
+#define INA219C_IS_NOT_OVERFLOWED	2
 
 /* default value of INA219C_REG_CONFIG */
 #define INA219C_REG_CONFIG_DEFAULT	(0x399F)
