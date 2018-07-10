@@ -9,6 +9,7 @@ Define one of supported `INA219_I2C_*` variable.
 | Variable name | Platform | Driver |
 |---------------|----------|--------|
 | `INA219_I2C_ESP_IDF` | `esp-idf` | Native I2C API |
+| `INA219_I2C_ARDUINO_WIRE` | `arduino` | `Wire` |
 
 ## Unit testing
 
