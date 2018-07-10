@@ -13,7 +13,7 @@ extern "C" {
  * data array of data to write or read
  * len the length of data
  */
-typedef int8_t (*ina219c_fptr_t) (const uint8_t addr, const uint8_t reg_addr, uint8_t *data, uint8_t len);
+typedef int8_t (*ina219c_fptr_t) (const uint8_t addr, const uint8_t reg_addr, uint8_t *data, const uint8_t len);
 
 void
 ina219c_delay_ms(const uint32_t period);
@@ -162,7 +162,7 @@ ina219c_create(const uint8_t addr);
  * @param[in] len: Length of bytes to read
  */
 int8_t
-ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len);
+ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len);
 
 /*!
  * @brief A thin wrapper of a function to writes variable length of bytes to
@@ -179,7 +179,7 @@ ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len);
  * @param[in] len : Length of bytes to write
  */
 int8_t
-ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, uint8_t len);
+ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len);
 
 /*!
  * @brief Writes two bytes to a register.
