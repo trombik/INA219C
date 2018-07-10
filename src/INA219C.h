@@ -53,35 +53,51 @@ ina219c_delay_ms(const uint32_t period);
 /* default value of INA219C_REG_CONFIG */
 #define INA219C_REG_CONFIG_DEFAULT	(0x399F)
 
+/*!
+ * @brief Bus Voltage range
+ */
 typedef enum
 {
-	INA219C_BUS_VOLTAGE_RANGE_16V	= 0b00,
-	INA219C_BUS_VOLTAGE_RANGE_32V	= 0b01 /* default */
+	INA219C_BUS_VOLTAGE_RANGE_16V	= 0b00, /**< 16V */
+	INA219C_BUS_VOLTAGE_RANGE_32V	= 0b01  /**< 21V, default */
 } ina219c_range;
 
+/*!
+ * @brief Gain of PGA Function
+ */
 typedef enum
 {
-	INA219C_PGA_GAIN_40MV	= 0b00,
-	INA219C_PGA_GAIN_80MV	= 0b01,
-	INA219C_PGA_GAIN_160MV	= 0b10,
-	INA219C_PGA_GAIN_320MV	= 0b11 /* default */
+	INA219C_PGA_GAIN_40MV	= 0b00, /**< 40mV */
+	INA219C_PGA_GAIN_80MV	= 0b01, /**< 80mV */
+	INA219C_PGA_GAIN_160MV	= 0b10, /**< 160mV */
+	INA219C_PGA_GAIN_320MV	= 0b11  /**< 320mV, default */
 } ina219c_pga_gain_t;
 
+/*!
+ * @brief ADC resolution/averaging and conversion time settings
+ *
+ * See also 8.6.2.1 Configuration Register
+ */
 typedef enum
 {
-	INA219C_RESOLUTION_9BIT_1	= 0b0000,
-	INA219C_RESOLUTION_10BIT_1	= 0b0001,
-	INA219C_RESOLUTION_11BIT_1	= 0b0010,
-	INA219C_RESOLUTION_12BIT_1	= 0b0011, /* default */
-	INA219C_RESOLUTION_12BIT_2	= 0b1001,
-	INA219C_RESOLUTION_12BIT_4	= 0b1010,
-	INA219C_RESOLUTION_12BIT_8	= 0b1011,
-	INA219C_RESOLUTION_12BIT_16	= 0b1100,
-	INA219C_RESOLUTION_12BIT_32	= 0b1101,
-	INA219C_RESOLUTION_12BIT_64	= 0b1110,
-	INA219C_RESOLUTION_12BIT_128	= 0b1111
+	INA219C_RESOLUTION_9BIT_1	= 0b0000, /**< 9 bit / 84 us */
+	INA219C_RESOLUTION_10BIT_1	= 0b0001, /**< 10 bit / 148 us */
+	INA219C_RESOLUTION_11BIT_1	= 0b0010, /**< 11 bit / 276 us */
+	INA219C_RESOLUTION_12BIT_1	= 0b0011, /**< 12 bit / 532 us, default */
+	INA219C_RESOLUTION_12BIT_2	= 0b1001, /**< 12 bit, 2 samples / 1.06 ms */
+	INA219C_RESOLUTION_12BIT_4	= 0b1010, /**< 12 bit, 4 samples / 2.13 ms */
+	INA219C_RESOLUTION_12BIT_8	= 0b1011, /**< 12 bit, 8 samples / 4.26 ms */
+	INA219C_RESOLUTION_12BIT_16	= 0b1100, /**< 12 bit, 16 samples / 8.51 ms */
+	INA219C_RESOLUTION_12BIT_32	= 0b1101, /**< 12 bit, 32 samples / 17.02 ms */
+	INA219C_RESOLUTION_12BIT_64	= 0b1110, /**< 12 bit, 64 samples / 34.05 ms */
+	INA219C_RESOLUTION_12BIT_128	= 0b1111  /**< 12 bit, 128 samples / 68.10 ms */
 } ina219_resolution_t;
 
+/*
+ * @brief Operation mode
+ *
+ * See also 8.6.2.1 Configuration Register
+ */
 typedef enum
 {
 	INA219C_MODE_POWERDOWN			= 0b000,
@@ -94,32 +110,30 @@ typedef enum
 	INA219C_MODE_SHUNT_BUS_CONTINUOUS	= 0b111, /* default */
 } ina219c_mode;
 
+/*!
+ * @brief A struct representing the device
+ */
 struct ina219c_dev {
-	/*! I2C address */
-	uint8_t address;
-	/* framework-dependant function pointers */
-	ina219c_fptr_t read;
-	ina219c_fptr_t write;
-	/* maximum expected current in Amps */
-	float max_expected_i;
-	/* Shunt register value in Ohms */
-	float shunt_r;
-	/* calibration value */
-	uint16_t cal;
+	uint8_t address; /**< I2C address (RW) */
+	float max_expected_i; /**< Maximum expected current in Amps (RW) */
+	float shunt_r; /**< Shunt register value in Ohms (RW) */
+	ina219c_range range; /**< Bus Voltage range (RW) */
+	ina219c_pga_gain_t gain; /**< PGA gain (RW) */
+	ina219_resolution_t bus_adc_resolution; /**< Bus ADC resolution (RW) */
+	ina219_resolution_t shunt_adc_resolution; /** Shunt ADC resolution (RW) */
+	ina219c_mode mode; /**< Operaion mode (RW) */
 
-	ina219c_pga_gain_t gain;
-	float current_lsb;
-	float power_lsb;
-	float max_possible_i;
+	float shunt_voltage; /**< Shunt volatage in V (RO) */
+	float bus_voltage; /**< Bus voltage in V (RO) */
+	float power; /**< Power in Watt (RO) */
+	float current; /**< Current in Amps (RO) */
+	float current_lsb; /**< Current_LSB (RO) */
+	float power_lsb; /**< Power_LSB (RO) */
+	float max_possible_i; /**< Maximum measurable current in Amps in Amps (RO) */
+	uint16_t cal; /**< A Calibration value for Calibration Register (RO) */
 
-	ina219c_range range;
-	float shunt_voltage;
-	float bus_voltage;
-	float power;
-	float current;
-	ina219_resolution_t bus_adc_resolution;
-	ina219_resolution_t shunt_adc_resolution;
-	ina219c_mode mode;
+	ina219c_fptr_t read; /**< framework-dependant function pointer to I2C read (RO) */
+	ina219c_fptr_t write; /**< framework-dependant function pointer to I2C write (RO) */
 };
 
 /*!
