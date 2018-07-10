@@ -1,11 +1,9 @@
-#include "INA219C.h"
+/* do not allow to compile this file unless included from other header file */
+#if defined(_INA219C_ESP_IDF_h) || defined(_INA219C_Arduino_Wire_h)
 
+#include <stdint.h>
 #include <math.h>
 #include <assert.h>
-
-#if defined(INA219_I2C_ESP_IDF)
-#include "sys/esp_idf/i2c.c"
-#endif
 
 int8_t
 ina219c_read16(const struct ina219c_dev *ina219_dev, const uint8_t reg, uint16_t *data)
@@ -356,3 +354,4 @@ ina219c_configure(struct ina219c_dev *dev)
 	ina219c_read16(dev, INA219C_REG_CONFIG, &reg_value);
         return r;
 }
+#endif // defined(_INA219C_ESP_IDF_h) || defined(_INA219C_Arduino_Wire_h)

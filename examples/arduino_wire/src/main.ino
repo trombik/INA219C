@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <INA219C.h>
+#include <INA219C_Arduino_Wire.h>
 
 struct ina219c_dev dev;
 

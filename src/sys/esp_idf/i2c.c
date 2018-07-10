@@ -1,4 +1,4 @@
-#if defined(INA219_I2C_ESP_IDF)
+#if defined(_INA219C_ESP_IDF_h)
 #include <stdint.h>
 #include <esp_log.h>
 #include <driver/i2c.h>

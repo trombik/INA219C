@@ -9,7 +9,7 @@
 #include <INA219C.h>
 #include <sdkconfig.h>
 
-#include <INA219C.h>
+#include <INA219C_ESP_IDF.h>
 
 #define GPIO_SDA 21
 #define GPIO_SCL 22
