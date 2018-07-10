@@ -431,4 +431,4 @@ ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage);
 }
 #endif
 
-#endif
+#endif // !defined(_INA219C_h)

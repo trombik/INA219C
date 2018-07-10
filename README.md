@@ -4,12 +4,12 @@ A C driver for INA219 IC.
 
 ## Choosing I2C implementation
 
-Define one of supported `INA219_I2C_*` variable.
+Include one of header files below.
 
-| Variable name | Framework | Driver |
+| Header file | Framework | Driver |
 |---------------|----------|--------|
-| `INA219_I2C_ESP_IDF` | `esp-idf` | Native I2C API |
-| `INA219_I2C_ARDUINO_WIRE` | `arduino` | `Wire` |
+| `INA219C_ESP_IDF.h` | `esp-idf` | Native I2C API |
+| `INA219C_Arduino_Wire.h` | `arduino` | `Wire` |
 
 ## Unit testing
 

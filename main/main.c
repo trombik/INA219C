@@ -5,7 +5,7 @@
 #include "freertos/task.h"
 #include "tcpip_adapter.h"
 
-#include "INA219C.h"
+#include "INA219C_ESP_IDF.h"
 
 void
 unityTask(void *pvParameters) {

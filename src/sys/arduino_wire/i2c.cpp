@@ -1,4 +1,4 @@
-#if defined(INA219_I2C_ARDUINO_WIRE)
+#if defined(_INA219C_Arduino_Wire_h)
 
 #if defined(ARDUINO_ARCH_AVR)
 #define WITH_STOP 1
