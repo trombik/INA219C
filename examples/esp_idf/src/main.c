@@ -5,10 +5,9 @@
 #include <esp_spi_flash.h>
 #include <driver/i2c.h>
 #include <esp_err.h>
-#include <INA219C.h>
 #include <sdkconfig.h>
 
-#include <INA219C.h>
+#include <INA219.h>
 
 #define GPIO_SDA 21
 #define GPIO_SCL 22
@@ -54,7 +53,7 @@ task_measure(void * pvParameters)
 	vTaskDelay(2000 / portTICK_PERIOD_MS);
 	ESP_LOGI(log_tag, "Starting the task");
 
-	dev = ina219_create(INA219C_ADDRESS);
+	dev = ina219_create(INA219_ADDRESS);
 	dev.max_expected_i = 1;
 
 	ESP_LOGI(log_tag, "Initialinzing I2C...");
@@ -68,7 +67,7 @@ task_measure(void * pvParameters)
 	}
 	ESP_LOGI(log_tag, "done resetting INA219");
 
-	dev.gain = INA219C_PGA_GAIN_40MV;
+	dev.gain = INA219_PGA_GAIN_40MV;
 	ESP_LOGI(log_tag, "Configuring...");
 	if (ina219_configure(&dev) != 0) {
 		ESP_LOGE(log_tag, "Failed to ina219_configure()");
@@ -88,7 +87,7 @@ task_measure(void * pvParameters)
 		if (i == 100) {
 			ESP_LOGE(log_tag, "Timeout while ina219_conversion_is_ready()");
 		}
-		if (ina219_conversion_is_ready(&dev) == INA219C_CONVERSION_IS_READY) {
+		if (ina219_conversion_is_ready(&dev) == INA219_CONVERSION_IS_READY) {
 			break;
 		}
 	}
