@@ -7,7 +7,7 @@
 #include <esp_err.h>
 #include <sdkconfig.h>
 
-#include <INA219.h>
+#include <TRB_INA219.h>
 
 #define GPIO_SDA 21
 #define GPIO_SCL 22
