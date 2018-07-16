@@ -1,0 +1,21 @@
+{
+    "name": "INA219C",
+    "platforms": [
+        "espressif32",
+        "espressif8266",
+        "atmelavr"
+    ],
+    "frameworks": [
+        "espidf",
+        "arduino"
+    ],
+    "build": {
+        "extraScript": "ex.py"
+    },
+    "dependencies": [
+        {
+            "name": "Brzo I2C",
+            "platforms": "espressif8266"
+        }
+    ]
+}
