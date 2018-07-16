@@ -55,4 +55,4 @@ Examples can be found under [examples](examples).
 
 ## Unit testing
 
-See `[UNIT_TEST.md](UNIT_TEST.md)`.
+See [UNIT_TEST.md](UNIT_TEST.md).
