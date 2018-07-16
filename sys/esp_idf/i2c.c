@@ -1,9 +1,9 @@
-#if defined(_INA219C_ESP_IDF_h)
+#if defined(_TRB_INA219_ESP_IDF_h)
 #include <stdint.h>
 #include <esp_log.h>
 #include <driver/i2c.h>
 #include <esp_err.h>
-#include "../../INA219C.h"
+#include "../../TRB_INA219.h"
 
 /* I2C implementations for esp-idf */
 
@@ -56,8 +56,8 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_
 
 	/* read-only registers */
 	assert(
-	    reg != INA219C_REG_SHUNT && reg != INA219C_REG_BUS &&
-	    reg != INA219C_REG_POWER && reg != INA219C_REG_CURRENT);
+	    reg != INA219_REG_SHUNT && reg != INA219_REG_BUS &&
+	    reg != INA219_REG_POWER && reg != INA219_REG_CURRENT);
 	command = i2c_cmd_link_create();
 
 	/* I2C start */

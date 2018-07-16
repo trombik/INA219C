@@ -2,7 +2,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "INA219C.h"
+#include "TRB_INA219.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -33,7 +33,7 @@ int8_t
 ina219c_reset(struct ina219c_dev *dev)
 {
 	int8_t r = 0;
-	r = ina219c_set_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_RESET, 1);
+	r = ina219c_set_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_RESET, 1);
 	return r;
 }
 
@@ -42,7 +42,7 @@ ina219c_get_mode(const struct ina219c_dev *dev, ina219c_mode_t *mode)
 {
 	int8_t r;
 	uint16_t value;
-	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_MODE, &value);
+	r = ina219c_get_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_MODE, &value);
 	if (r != 0)
 		return r;
 	*mode = (ina219c_mode_t)value;
@@ -94,7 +94,7 @@ ina219c_get_bus_voltage_range(const struct ina219c_dev *dev, ina219c_range_t *ra
 {
 	uint8_t r;
 	uint16_t reg_value;
-	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_BRNG, &reg_value);
+	r = ina219c_get_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_BRNG, &reg_value);
 	if (r != 0)
 		return r;
 	*range = (ina219c_range_t)reg_value;
@@ -105,13 +105,13 @@ float
 __ina219c_get_shunt_max_v(struct ina219c_dev *dev)
 {
 	switch (dev->gain) {
-	case INA219C_PGA_GAIN_40MV:
+	case INA219_PGA_GAIN_40MV:
 		return 0.04;
-	case INA219C_PGA_GAIN_80MV:
+	case INA219_PGA_GAIN_80MV:
 		return 0.08;
-	case INA219C_PGA_GAIN_160MV:
+	case INA219_PGA_GAIN_160MV:
 		return 0.16;
-	case INA219C_PGA_GAIN_320MV:
+	case INA219_PGA_GAIN_320MV:
 		return 0.32;
 	default:
 	/* should not be reached */
@@ -149,7 +149,7 @@ ina219c_set_calibration(struct ina219c_dev *dev)
 	r = ina219c_calc_calibration(dev);
 	if (r != 0)
 		return r;
-	r = ina219c_write16(dev, INA219C_REG_CALIBRATION, &(dev->cal));
+	r = ina219c_write16(dev, INA219_REG_CALIBRATION, &(dev->cal));
 	return r;
 }
 
@@ -157,7 +157,7 @@ int8_t
 ina219c_get_calibration(struct ina219c_dev *dev, uint16_t *value)
 {
 	int8_t r;
-	r = ina219c_read16(dev, INA219C_REG_CALIBRATION, &(dev->cal));
+	r = ina219c_read16(dev, INA219_REG_CALIBRATION, &(dev->cal));
 	return r;
 }
 
@@ -166,7 +166,7 @@ ina219c_get_pga_gain(const struct ina219c_dev *dev, ina219c_pga_gain_t *gain)
 {
 	int8_t r;
 	uint16_t value;
-	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_PG, &value);
+	r = ina219c_get_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_PG, &value);
 	if (r != 0)
 		return r;
 	*gain = (ina219c_pga_gain_t)value;
@@ -178,7 +178,7 @@ ina219c_get_sadc_value(const struct ina219c_dev *dev, ina219_resolution_t *res)
 {
 	int8_t r;
 	uint16_t value;
-	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_SADC, &value);
+	r = ina219c_get_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_SADC, &value);
 	if (r != 0)
 		return r;
 	*res = (ina219_resolution_t)value;
@@ -190,7 +190,7 @@ ina219c_get_badc_value(const struct ina219c_dev *dev, ina219_resolution_t *res)
 {
 	int8_t r;
 	uint16_t value;
-	r = ina219c_get_bits(dev, INA219C_REG_CONFIG, INA219C_REG_CONFIG_MASK_BADC, &value);
+	r = ina219c_get_bits(dev, INA219_REG_CONFIG, INA219_REG_CONFIG_MASK_BADC, &value);
 	if (r != 0)
 		return r;
 	*res = (ina219_resolution_t)value;
@@ -212,10 +212,10 @@ ina219c_conversion_is_ready(const struct ina219c_dev *dev)
 {
 	int8_t r;
 	uint16_t reg_value;
-	r = ina219c_get_bits(dev, INA219C_REG_BUS, INA219C_REG_BUS_MASK_CNVR, &reg_value);
+	r = ina219c_get_bits(dev, INA219_REG_BUS, INA219_REG_BUS_MASK_CNVR, &reg_value);
 	if (r != 0)
 		return -1;
-	return reg_value == 1 ? INA219C_CONVERSION_IS_READY : INA219C_CONVERSION_IS_NOT_READY;
+	return reg_value == 1 ? INA219_CONVERSION_IS_READY : INA219_CONVERSION_IS_NOT_READY;
 }
 
 int8_t
@@ -223,10 +223,10 @@ ina219c_conversion_is_overflowed(const struct ina219c_dev *dev)
 {
 	int8_t r;
 	uint16_t reg_value;
-	r = ina219c_read16(dev, INA219C_REG_BUS, &reg_value);
+	r = ina219c_read16(dev, INA219_REG_BUS, &reg_value);
 	if (r != 0)
 		return -1;
-	return (reg_value & 0x01) ? INA219C_IS_OVERFLOWED : INA219C_IS_NOT_OVERFLOWED;
+	return (reg_value & 0x01) ? INA219_IS_OVERFLOWED : INA219_IS_NOT_OVERFLOWED;
 }
 
 int8_t
@@ -234,7 +234,7 @@ ina219c_get_bus_voltage(const struct ina219c_dev *dev, float *voltage)
 {
 	int8_t r;
 	uint16_t bus_voltage_raw;
-	r = ina219c_read16(dev, INA219C_REG_BUS, &bus_voltage_raw);
+	r = ina219c_read16(dev, INA219_REG_BUS, &bus_voltage_raw);
 	if (r != 0)
 		return r;
 	*voltage = (float)(bus_voltage_raw >> 3) * 0.004 ; // in V (LSB 4mV)
@@ -246,7 +246,7 @@ ina219c_get_power(const struct ina219c_dev *dev, float *power)
 {
 	int8_t r;
 	uint16_t power_raw;
-	r = ina219c_read16(dev, INA219C_REG_POWER, &power_raw);
+	r = ina219c_read16(dev, INA219_REG_POWER, &power_raw);
 	if (r != 0)
 		return r;
 	*power = (float)(dev->power_lsb * power_raw);
@@ -258,7 +258,7 @@ ina219c_get_current(const struct ina219c_dev *dev, float *current)
 {
 	int8_t r;
 	uint16_t current_raw;
-	r = ina219c_read16(dev, INA219C_REG_CURRENT, &current_raw);
+	r = ina219c_read16(dev, INA219_REG_CURRENT, &current_raw);
 	if (r != 0)
 		return r;
 	if ((current_raw >> 15 ) == 1) {
@@ -276,21 +276,21 @@ ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage)
 	uint8_t sign_bits = 0;
 	uint16_t shunt_voltage_raw;
 
-	r = ina219c_read16(dev, INA219C_REG_SHUNT, &shunt_voltage_raw);
+	r = ina219c_read16(dev, INA219_REG_SHUNT, &shunt_voltage_raw);
 	if (r != 0)
 		return r;
 
 	switch (dev->gain) {
-	case INA219C_PGA_GAIN_320MV:
+	case INA219_PGA_GAIN_320MV:
 		sign_bits = 1;
 		break;
-	case INA219C_PGA_GAIN_160MV:
+	case INA219_PGA_GAIN_160MV:
 		sign_bits = 2;
 		break;
-	case INA219C_PGA_GAIN_80MV:
+	case INA219_PGA_GAIN_80MV:
 		sign_bits = 3;
 		break;
-	case INA219C_PGA_GAIN_40MV:
+	case INA219_PGA_GAIN_40MV:
 		sign_bits = 4;
 		break;
 	}
@@ -331,11 +331,11 @@ ina219c_create(const uint8_t addr)
 	dev.max_expected_i = 3.0;
 	dev.shunt_r = 0.1;
 
-	dev.range = INA219C_BUS_VOLTAGE_RANGE_32V;
-	dev.gain = INA219C_PGA_GAIN_320MV;
-	dev.bus_adc_resolution = INA219C_RESOLUTION_12BIT_1;
-	dev.shunt_adc_resolution = INA219C_RESOLUTION_12BIT_1;
-	dev.mode = INA219C_MODE_SHUNT_BUS_CONTINUOUS;
+	dev.range = INA219_BUS_VOLTAGE_RANGE_32V;
+	dev.gain = INA219_PGA_GAIN_320MV;
+	dev.bus_adc_resolution = INA219_RESOLUTION_12BIT_1;
+	dev.shunt_adc_resolution = INA219_RESOLUTION_12BIT_1;
+	dev.mode = INA219_MODE_SHUNT_BUS_CONTINUOUS;
 
 	ina219c_calc_calibration(&dev);
 	return dev;
@@ -348,13 +348,13 @@ ina219c_configure(struct ina219c_dev *dev)
 	uint16_t reg_value;
 
 	reg_value =
-	    (dev->range << ina219c_get_bits_from_mask(INA219C_REG_CONFIG_MASK_BRNG)) |
-	    (dev->gain << ina219c_get_bits_from_mask(INA219C_REG_CONFIG_MASK_PG)) |
-	    (dev->bus_adc_resolution << ina219c_get_bits_from_mask(INA219C_REG_CONFIG_MASK_BADC)) |
-	    (dev->shunt_adc_resolution << ina219c_get_bits_from_mask(INA219C_REG_CONFIG_MASK_SADC)) |
-	    (dev->mode << ina219c_get_bits_from_mask(INA219C_REG_CONFIG_MASK_MODE));
-	r = ina219c_write16(dev, INA219C_REG_CONFIG, &reg_value);
-	ina219c_read16(dev, INA219C_REG_CONFIG, &reg_value);
+	    (dev->range << ina219c_get_bits_from_mask(INA219_REG_CONFIG_MASK_BRNG)) |
+	    (dev->gain << ina219c_get_bits_from_mask(INA219_REG_CONFIG_MASK_PG)) |
+	    (dev->bus_adc_resolution << ina219c_get_bits_from_mask(INA219_REG_CONFIG_MASK_BADC)) |
+	    (dev->shunt_adc_resolution << ina219c_get_bits_from_mask(INA219_REG_CONFIG_MASK_SADC)) |
+	    (dev->mode << ina219c_get_bits_from_mask(INA219_REG_CONFIG_MASK_MODE));
+	r = ina219c_write16(dev, INA219_REG_CONFIG, &reg_value);
+	ina219c_read16(dev, INA219_REG_CONFIG, &reg_value);
         return r;
 }
 

@@ -1,7 +1,7 @@
-#if !defined(_INA219C_Arduino_brzo_h)
-#define _INA219C_Arduino_brzo_h
+#if !defined(_TRB_INA219_Arduino_brzo_h)
+#define _TRB_INA219_Arduino_brzo_h
 
-#include "INA219C_common.h"
+#include "TRB_INA219_common.h"
 #include <stdint.h>
 
 #if defined(__cplusplus)
@@ -18,4 +18,4 @@ ina219c_brzo_set_scl_freq(const uint16_t freq);
 }
 #endif
 
-#endif // !defined(_INA219C_Arduino_Wire_h)
+#endif // !defined(_TRB_INA219_Arduino_Wire_h)

@@ -1,7 +1,7 @@
 #if !defined(ARDUINO)
 
-#include "INA219C_ESP_IDF.h"
+#include "TRB_INA219_ESP_IDF.h"
 #include "sys/esp_idf/i2c.c"
-#include "INA219C_common.c"
+#include "TRB_INA219_common.c"
 
 #endif // !defined(ARDUINO)
