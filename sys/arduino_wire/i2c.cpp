@@ -8,7 +8,7 @@
 #include "../../TRB_INA219.h"
 
 void
-ina219c_delay_ms(const uint32_t period)
+ina219_delay_ms(const uint32_t period)
 {
 	uint32_t now = millis();
 	/* do NOOP instead of delay(), which does not block */
@@ -21,7 +21,7 @@ ina219c_delay_ms(const uint32_t period)
 }
 
 int8_t
-ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
+ina219_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
 	int8_t result = 0;
 	const static uint8_t WITH_STOP_BIT = 1;
@@ -44,7 +44,7 @@ ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, co
 }
 
 int8_t
-ina219c_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
+ina219_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
 	int8_t result = 0;
 

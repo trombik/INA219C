@@ -11,20 +11,20 @@ extern "C" {
 static uint16_t scl_freq = 100; // in KHz
 
 uint16_t
-ina219c_brzo_get_scl_freq()
+ina219_brzo_get_scl_freq()
 {
 	return scl_freq;
 }
 
 uint16_t
-ina219c_brzo_set_scl_freq(const uint16_t freq)
+ina219_brzo_set_scl_freq(const uint16_t freq)
 {
 	scl_freq = freq;
 	return scl_freq;
 }
 
 void
-ina219c_delay_ms(const uint32_t period)
+ina219_delay_ms(const uint32_t period)
 {
 	uint32_t now = millis();
 	/* do NOOP instead of delay(), which does not block */
@@ -37,7 +37,7 @@ ina219c_delay_ms(const uint32_t period)
 }
 
 int8_t
-ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
+ina219_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
 	int8_t result = 0;
 	uint8_t reg_addr_copy;
@@ -45,7 +45,7 @@ ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, co
 	reg_addr_copy = reg_addr;
 
 	/* start transaction */
-	brzo_i2c_start_transaction(dev_id, ina219c_brzo_get_scl_freq());
+	brzo_i2c_start_transaction(dev_id, ina219_brzo_get_scl_freq());
 	/* write register address with repeated start */
 	brzo_i2c_write(&reg_addr_copy, 1, WITH_REPEATED_START);
 	/* read the values */
@@ -56,7 +56,7 @@ ina219c_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, co
 }
 
 int8_t
-ina219c_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
+ina219_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
 	int8_t result = 0;
 	uint8_t *buffer;
@@ -71,13 +71,13 @@ ina219c_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, c
 		buffer[i] = reg_data[i - 1];
 
 	/* start transaction */
-	brzo_i2c_start_transaction(dev_id, ina219c_brzo_get_scl_freq());
+	brzo_i2c_start_transaction(dev_id, ina219_brzo_get_scl_freq());
 	/* write register address + the value */
 	brzo_i2c_write(buffer, len + 1, WITHOUT_REPEATED_START);
 	/* end end transaction */
 	result = brzo_i2c_end_transaction();
 	free(buffer);
-	ina219c_delay_ms(10);
+	ina219_delay_ms(10);
 	return result;
 }
 

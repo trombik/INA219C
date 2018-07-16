@@ -9,10 +9,10 @@ extern "C" {
 #endif
 
 uint16_t
-ina219c_brzo_get_scl_freq();
+ina219_brzo_get_scl_freq();
 
 uint16_t
-ina219c_brzo_set_scl_freq(const uint16_t freq);
+ina219_brzo_set_scl_freq(const uint16_t freq);
 
 #if defined(__cplusplus)
 }

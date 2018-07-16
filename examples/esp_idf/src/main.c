@@ -45,7 +45,7 @@ void
 task_measure(void * pvParameters)
 {
 	static char log_tag[] = "task_measure";
-	struct ina219c_dev dev;
+	struct ina219_dev dev;
 	float v_bus;
 	float v_shunt;
 	float p;
@@ -54,7 +54,7 @@ task_measure(void * pvParameters)
 	vTaskDelay(2000 / portTICK_PERIOD_MS);
 	ESP_LOGI(log_tag, "Starting the task");
 
-	dev = ina219c_create(INA219C_ADDRESS);
+	dev = ina219_create(INA219C_ADDRESS);
 	dev.max_expected_i = 1;
 
 	ESP_LOGI(log_tag, "Initialinzing I2C...");
@@ -62,23 +62,23 @@ task_measure(void * pvParameters)
 	ESP_LOGI(log_tag, "I2C initialized.");
 
 	ESP_LOGI(log_tag, "Resetting INA219...");
-	if (ina219c_reset(&dev) != 0) {
-		ESP_LOGE(log_tag, "failed to ina219c_reset()");
+	if (ina219_reset(&dev) != 0) {
+		ESP_LOGE(log_tag, "failed to ina219_reset()");
 		vTaskDelete(NULL);
 	}
 	ESP_LOGI(log_tag, "done resetting INA219");
 
 	dev.gain = INA219C_PGA_GAIN_40MV;
 	ESP_LOGI(log_tag, "Configuring...");
-	if (ina219c_configure(&dev) != 0) {
-		ESP_LOGE(log_tag, "Failed to ina219c_configure()");
+	if (ina219_configure(&dev) != 0) {
+		ESP_LOGE(log_tag, "Failed to ina219_configure()");
 		vTaskDelete(NULL);
 	}
 	ESP_LOGI(log_tag, "Done Configuring");
 
 	ESP_LOGI(log_tag, "Calibrating...");
-	if (ina219c_set_calibration(&dev) != 0) {
-		ESP_LOGE(log_tag, "failed to ina219c_set_calibration()");
+	if (ina219_set_calibration(&dev) != 0) {
+		ESP_LOGE(log_tag, "failed to ina219_set_calibration()");
 		vTaskDelete(NULL);
 	}
 	ESP_LOGI(log_tag, "Calibrated");
@@ -86,35 +86,35 @@ task_measure(void * pvParameters)
 	ESP_LOGI(log_tag, "Waiting for conversion to be ready...");
 	for (uint8_t i = 0; i <= 100; i++) {
 		if (i == 100) {
-			ESP_LOGE(log_tag, "Timeout while ina219c_conversion_is_ready()");
+			ESP_LOGE(log_tag, "Timeout while ina219_conversion_is_ready()");
 		}
-		if (ina219c_conversion_is_ready(&dev) == INA219C_CONVERSION_IS_READY) {
+		if (ina219_conversion_is_ready(&dev) == INA219C_CONVERSION_IS_READY) {
 			break;
 		}
 	}
 	ESP_LOGI(log_tag, "conversion is now ready");
 
 	for(;;) {
-		if (ina219c_get_bus_voltage(&dev, &v_bus) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219c_get_bus_voltage()");
+		if (ina219_get_bus_voltage(&dev, &v_bus) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_bus_voltage()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Vbus: %f", v_bus);
-		if (ina219c_get_shunt_voltage(&dev, &v_shunt) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219c_get_shunt_voltage()");
+		if (ina219_get_shunt_voltage(&dev, &v_shunt) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_shunt_voltage()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Vshunt: %f", v_shunt);
-		if (ina219c_get_power(&dev, &p) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219c_get_power()");
+		if (ina219_get_power(&dev, &p) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_power()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Power: %f", p);
-		if (ina219c_get_current(&dev, &current) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219c_get_current()");
+		if (ina219_get_current(&dev, &current) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_current()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
