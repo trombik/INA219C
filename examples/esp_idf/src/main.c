@@ -1,4 +1,3 @@
-#if defined(ESP32) && !defined(ARDUINO)
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -9,7 +8,7 @@
 #include <INA219C.h>
 #include <sdkconfig.h>
 
-#include <INA219C_ESP_IDF.h>
+#include <INA219C.h>
 
 #define GPIO_SDA 21
 #define GPIO_SCL 22
@@ -159,4 +158,3 @@ app_main(void)
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 }
-#endif

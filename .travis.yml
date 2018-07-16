@@ -78,9 +78,10 @@ before_script:
   - git clone --single-branch -b v3.1-beta1 https://github.com/espressif/esp-idf.git ~/esp-idf
 
 script:
-  - cppcheck --error-exitcode=1 --enable=warning,style,performance,portability -v --language=c src/*.c src main
-  - cppcheck --error-exitcode=1 --enable=warning,style,performance,portability -v --language=c++ src/*.cpp src main
+  - cppcheck --error-exitcode=1 --enable=warning,style,performance,portability -v --language=c *.c sys/*/*.c main
+  - cppcheck --error-exitcode=1 --enable=warning,style,performance,portability -v --language=c++ *.cpp main
   - make defconfig
   - make TEST_COMPONENTS="INA219C"
   - PLATFORMIO_CI_SRC=examples/esp_idf/src pio ci --lib . --project-conf examples/esp_idf/platformio.ini
   - PLATFORMIO_CI_SRC=examples/arduino_wire/src pio ci --lib . --project-conf examples/arduino_wire/platformio.ini
+  - PLATFORMIO_CI_SRC=examples/arduino_brzo/src pio ci --lib . --project-conf examples/arduino_brzo/platformio.ini

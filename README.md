@@ -1,15 +1,17 @@
-# INA219C
+# `INA219C`
 
 A C driver for INA219 IC.
 
 ## Choosing I2C implementation
 
-Include one of header files below.
+Define one of variables below. The variable must be defined as build flag,
+not in the code.
 
-| Header file | Framework | Driver |
-|---------------|----------|--------|
-| `INA219C_ESP_IDF.h` | `esp-idf` | Native I2C API |
-| `INA219C_Arduino_Wire.h` | `arduino` | `Wire` |
+| Variable name | Platform | Framework | Driver |
+|---------------|----------|-----------|--------|
+| `INA219C_ESP_IDF.h` | `espressif32` | `esp-idf` | [Native I2C API](https://esp-idf.readthedocs.io/en/latest/api-reference/peripherals/i2c.html) |
+| `INA219C_Arduino_Wire.h` | `espressif32`, `espressif8266`, `atmelavr` | `arduino` | [`Wire`](https://www.arduino.cc/en/Reference/Wire) |
+| `INA219C_I2C_BRZO` | `espressif8266` | `arduino` | [`Brzo I2C`](https://github.com/pasko-zh/brzo_i2c) |
 
 ## Usage
 

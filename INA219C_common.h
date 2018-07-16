@@ -1,11 +1,11 @@
-#if !defined(_INA219C_h)
-#define _INA219C_h
+#if !defined(_INA219C_common_h)
+#define _INA219C_common_h
+
+#include <stdint.h>
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
-
-#include <stdint.h>
 
 /* read and write functions that must be implemented.
  * addr I2C address
@@ -431,4 +431,4 @@ ina219c_get_shunt_voltage(struct ina219c_dev *dev, float *shunt_voltage);
 }
 #endif
 
-#endif // !defined(_INA219C_h)
+#endif // !defined(_INA219C_common_h)

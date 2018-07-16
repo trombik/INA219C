@@ -1,6 +1,9 @@
-#include <Arduino.h>
-#include <Wire.h>
+#define STRETCHING_TIMEOUT_MILLI_SEC 1000
+#define I2C_ADDRESS 0x40
+
 #include <INA219C.h>
+#include <Arduino.h>
+#include <brzo_i2c.h>
 
 struct ina219c_dev dev;
 
@@ -20,12 +23,8 @@ void
 setup()
 {
 	Serial.begin(115200);
-#if defined(ESP8266) || defined(ESP32)
-	Wire.begin(GPIO_SDA, GPIO_SCL);
-#else
-    Wire.begin();
-#endif
-	dev = ina219c_create(0x40);
+	brzo_i2c_setup(GPIO_SDA, GPIO_SCL, STRETCHING_TIMEOUT_MILLI_SEC);
+	dev = ina219c_create(I2C_ADDRESS);
 	ina219c_configure(&dev);
 	ina219c_set_calibration(&dev);
 }
