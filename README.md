@@ -49,7 +49,7 @@ ina219c_get_sensor_values(&dev);
  */
 ```
 
-For more functions, see [INA219C.h](INA219C.h).
+For more functions, see [INA219C_common.h](INA219C_common.h).
 
 Examples can be found under [examples](examples).
 
