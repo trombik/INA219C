@@ -2,7 +2,7 @@
 #include <esp_err.h>
 
 #include "unity.h"
-#include "INA219C.h"
+#include "TRB_INA219.h"
 
 #include <esp_log.h>
 
@@ -18,7 +18,7 @@ ina219_resolution_t res;
 float voltage;
 float milliv;
 
-static char component[] = "[INA219C]";
+static char component[] = "[TRB_INA219]";
 
 esp_err_t
 i2c_init()
@@ -45,88 +45,88 @@ TEST_CASE("ina219c_create", component)
 	TEST_ASSERT_EQUAL(1, dev.shunt_r * 10);
 }
 
-TEST_CASE("i2c_init", "[INA219C]")
+TEST_CASE("i2c_init", "[TRB_INA219]")
 {
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
 }
 
-TEST_CASE("ina219c_reset", "[INA219C]")
+TEST_CASE("ina219c_reset", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CONFIG, &reg_value));
-	TEST_ASSERT_EQUAL_UINT16_MESSAGE(INA219C_REG_CONFIG_DEFAULT, reg_value, "INA219C_REG_CONFIG has INA219C_REG_CONFIG_DEFAULT value");
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, TRB_INA219_REG_CONFIG, &reg_value));
+	TEST_ASSERT_EQUAL_UINT16_MESSAGE(TRB_INA219_REG_CONFIG_DEFAULT, reg_value, "TRB_INA219_REG_CONFIG has TRB_INA219_REG_CONFIG_DEFAULT value");
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
 }
 
-TEST_CASE("ina219c_decomplement", "[INA219C]")
+TEST_CASE("ina219c_decomplement", "[TRB_INA219]")
 {
 	TEST_ASSERT_EQUAL(-32000, ina219c_decomplement(0b1000001100000000, VALUE_IS_NEGATIVE));
 }
 
-TEST_CASE("ina219c_get_bits_from_mask", "[INA219C]")
+TEST_CASE("ina219c_get_bits_from_mask", "[TRB_INA219]")
 {
 	for (uint8_t i = 0; i < 16; i++) {
 		TEST_ASSERT_EQUAL_INT8(i, ina219c_get_bits_from_mask(1 << i));
 	}
 }
 
-TEST_CASE("ina219s_set_bits", "[INA219C]")
+TEST_CASE("ina219s_set_bits", "[TRB_INA219]")
 {
 
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
-	TEST_ASSERT_EQUAL_UINT16_MESSAGE(INA219C_REG_CONFIG_DEFAULT, reg_value, "INA219C_REG_CONFIG has INA219C_REG_CONFIG_DEFAULT value");
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bits(&dev, INA219C_REG_CONFIG, (1 << 13), 0));
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bits(&dev, INA219C_REG_CONFIG, (1 << 13), &reg_value));
+	TEST_ASSERT_EQUAL_UINT16_MESSAGE(TRB_INA219_REG_CONFIG_DEFAULT, reg_value, "TRB_INA219_REG_CONFIG has TRB_INA219_REG_CONFIG_DEFAULT value");
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bits(&dev, TRB_INA219_REG_CONFIG, (1 << 13), 0));
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bits(&dev, TRB_INA219_REG_CONFIG, (1 << 13), &reg_value));
 	TEST_ASSERT_EQUAL_UINT16(0, reg_value);
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bits(&dev, INA219C_REG_CONFIG, (1 << 13), 1));
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bits(&dev, INA219C_REG_CONFIG, (1 << 13), &reg_value));
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_bits(&dev, TRB_INA219_REG_CONFIG, (1 << 13), 1));
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bits(&dev, TRB_INA219_REG_CONFIG, (1 << 13), &reg_value));
 	TEST_ASSERT_EQUAL_UINT16(1, reg_value);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
 }
 
-TEST_CASE("ina219c_read16", "[INA219C]")
+TEST_CASE("ina219c_read16", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CONFIG, &reg_value));
-	TEST_ASSERT_EQUAL_INT16_MESSAGE(INA219C_REG_CONFIG_DEFAULT, reg_value,
-	    "INA219C_REG_CONFIG has default value after reset");
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, TRB_INA219_REG_CONFIG, &reg_value));
+	TEST_ASSERT_EQUAL_INT16_MESSAGE(TRB_INA219_REG_CONFIG_DEFAULT, reg_value,
+	    "TRB_INA219_REG_CONFIG has default value after reset");
 	TEST_ASSERT_EQUAL(0, ina219c_get_mode(&dev, &mode));
-	TEST_ASSERT_EQUAL(INA219C_MODE_SHUNT_BUS_CONTINUOUS, mode);
+	TEST_ASSERT_EQUAL(TRB_INA219_MODE_SHUNT_BUS_CONTINUOUS, mode);
 	TEST_ASSERT_EQUAL(0, ina219c_get_bus_voltage_range(&dev, &range));
-	TEST_ASSERT_EQUAL((ina219c_range_t)INA219C_BUS_VOLTAGE_RANGE_32V, range);
+	TEST_ASSERT_EQUAL((ina219c_range_t)TRB_INA219_BUS_VOLTAGE_RANGE_32V, range);
 	TEST_ASSERT_EQUAL(0, ina219c_get_pga_gain(&dev, &gain));
-	TEST_ASSERT_EQUAL(INA219C_PGA_GAIN_320MV, gain);
+	TEST_ASSERT_EQUAL(TRB_INA219_PGA_GAIN_320MV, gain);
 	TEST_ASSERT_EQUAL(0, ina219c_get_sadc_value(&dev, &res));
-	TEST_ASSERT_EQUAL(INA219C_RESOLUTION_12BIT_1, res);
+	TEST_ASSERT_EQUAL(TRB_INA219_RESOLUTION_12BIT_1, res);
 	TEST_ASSERT_EQUAL(0, ina219c_get_badc_value(&dev, &res));
-	TEST_ASSERT_EQUAL(INA219C_RESOLUTION_12BIT_1, res);
+	TEST_ASSERT_EQUAL(TRB_INA219_RESOLUTION_12BIT_1, res);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	i2c_driver_delete(I2C_NUM_0);
 }
 
-TEST_CASE("set_pga_gain", "[INA219C]")
+TEST_CASE("set_pga_gain", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
 	ina219c_pga_gain_t gains[] = {
-		INA219C_PGA_GAIN_40MV,
-		INA219C_PGA_GAIN_80MV,
-		INA219C_PGA_GAIN_160MV,
-		INA219C_PGA_GAIN_320MV
+		TRB_INA219_PGA_GAIN_40MV,
+		TRB_INA219_PGA_GAIN_80MV,
+		TRB_INA219_PGA_GAIN_160MV,
+		TRB_INA219_PGA_GAIN_320MV
 	};
 	for (uint8_t i = 0; i <= sizeof(gains) / sizeof(gains[0]) - 1; i++) {
 		dev.gain = gains[i];
@@ -134,31 +134,31 @@ TEST_CASE("set_pga_gain", "[INA219C]")
 		TEST_ASSERT_EQUAL_INT8(0, ina219c_get_pga_gain(&dev, &gain));
 		TEST_ASSERT_EQUAL_INT8(gains[i], gain);
 	}
-	dev.gain = INA219C_PGA_GAIN_80MV;
+	dev.gain = TRB_INA219_PGA_GAIN_80MV;
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_configure(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_pga_gain(&dev, &gain));
-	TEST_ASSERT_EQUAL_INT8(INA219C_PGA_GAIN_80MV, gain);
+	TEST_ASSERT_EQUAL_INT8(TRB_INA219_PGA_GAIN_80MV, gain);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 	i2c_driver_delete(I2C_NUM_0);
 }
 
-TEST_CASE("ina219c_set", "[INA219C]")
+TEST_CASE("ina219c_set", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
-	TEST_ASSERT_EQUAL(INA219C_BUS_VOLTAGE_RANGE_16V, ina219c_get_bus_voltage_range(&dev, &range));
+	TEST_ASSERT_EQUAL(TRB_INA219_BUS_VOLTAGE_RANGE_16V, ina219c_get_bus_voltage_range(&dev, &range));
 	ina219c_mode_t modes[] = {
-		INA219C_MODE_POWERDOWN,
-		INA219C_MODE_SHUNT_TRIGGERED,
-		INA219C_MODE_BUS_TRIGGERED,
-		INA219C_MODE_SHUNT_BUS_TRIGGERED,
-		INA219C_MODE_ADC_OFF,
-		INA219C_MODE_SHUNT_CONTINUOUS,
-		INA219C_MODE_BUS_CONTINUOUS,
-		INA219C_MODE_SHUNT_BUS_CONTINUOUS
+		TRB_INA219_MODE_POWERDOWN,
+		TRB_INA219_MODE_SHUNT_TRIGGERED,
+		TRB_INA219_MODE_BUS_TRIGGERED,
+		TRB_INA219_MODE_SHUNT_BUS_TRIGGERED,
+		TRB_INA219_MODE_ADC_OFF,
+		TRB_INA219_MODE_SHUNT_CONTINUOUS,
+		TRB_INA219_MODE_BUS_CONTINUOUS,
+		TRB_INA219_MODE_SHUNT_BUS_CONTINUOUS
 	};
 	for (uint8_t i = 0; i <= sizeof(modes) / sizeof(modes[0]) - 1; i++) {
 		dev.mode = modes[i];
@@ -167,10 +167,10 @@ TEST_CASE("ina219c_set", "[INA219C]")
 		TEST_ASSERT_EQUAL_INT8(modes[i], mode);
 	}
 	ina219c_pga_gain_t gains[] = {
-		INA219C_PGA_GAIN_40MV,
-		INA219C_PGA_GAIN_80MV,
-		INA219C_PGA_GAIN_160MV,
-		INA219C_PGA_GAIN_320MV
+		TRB_INA219_PGA_GAIN_40MV,
+		TRB_INA219_PGA_GAIN_80MV,
+		TRB_INA219_PGA_GAIN_160MV,
+		TRB_INA219_PGA_GAIN_320MV
 	};
 	for (uint8_t i = 0; i <= sizeof(gains) / sizeof(gains[0]) - 1; i++) {
 		dev.gain = gains[i];
@@ -182,25 +182,25 @@ TEST_CASE("ina219c_set", "[INA219C]")
 	i2c_driver_delete(I2C_NUM_0);
 }
 
-TEST_CASE("ina219c_regular_use_case", "[INA219C]")
+TEST_CASE("ina219c_regular_use_case", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
 
-	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CURRENT, &reg_value));
-	TEST_ASSERT_EQUAL_UINT16_MESSAGE(0, reg_value, "after reset INA219C_REG_CURRENT is supposed to be zero");
+	TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, TRB_INA219_REG_CURRENT, &reg_value));
+	TEST_ASSERT_EQUAL_UINT16_MESSAGE(0, reg_value, "after reset TRB_INA219_REG_CURRENT is supposed to be zero");
 
-	dev.gain = INA219C_PGA_GAIN_40MV;
+	dev.gain = TRB_INA219_PGA_GAIN_40MV;
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_configure(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_pga_gain(&dev, &gain));
-	TEST_ASSERT_EQUAL_INT8(INA219C_PGA_GAIN_40MV, gain);
+	TEST_ASSERT_EQUAL_INT8(TRB_INA219_PGA_GAIN_40MV, gain);
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_calibration(&dev));
 
 	for (uint8_t i = 0; i <= 100; i++) {
 		if (i == 100)
 			TEST_FAIL_MESSAGE("timeout while waiting for ina219c_conversion_is_ready()");
-		if (ina219c_conversion_is_ready(&dev) == INA219C_CONVERSION_IS_READY)
+		if (ina219c_conversion_is_ready(&dev) == TRB_INA219_CONVERSION_IS_READY)
 			break;
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
@@ -210,7 +210,7 @@ TEST_CASE("ina219c_regular_use_case", "[INA219C]")
 	i2c_driver_delete(I2C_NUM_0);
 }
 
-TEST_CASE("ina219c_calc_calibration", "[INA219C]")
+TEST_CASE("ina219c_calc_calibration", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_calc_calibration(&dev));
@@ -221,54 +221,54 @@ TEST_CASE("ina219c_calc_calibration", "[INA219C]")
 	TEST_ASSERT_EQUAL_HEX(0x346c, dev.cal);
 }
 
-TEST_CASE("ina219c_get_sensor_values", "[INA219C]")
+TEST_CASE("ina219c_get_sensor_values", "[TRB_INA219]")
 {
 	dev = ina219c_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	//TEST_ASSERT_EQUAL_INT8(0, ina219c_reset(&dev));
-	//TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, INA219C_REG_CONFIG, &reg_value));
+	//TEST_ASSERT_EQUAL_INT8(0, ina219c_read16(&dev, TRB_INA219_REG_CONFIG, &reg_value));
 
 	/* set non-default values */
 	dev.max_expected_i = 0.5; // Amps
-	dev.range = INA219C_BUS_VOLTAGE_RANGE_16V;
-	dev.gain = INA219C_PGA_GAIN_40MV;
-	dev.bus_adc_resolution = INA219C_RESOLUTION_11BIT_1;
-	dev.shunt_adc_resolution = INA219C_RESOLUTION_11BIT_1;
-	dev.mode = INA219C_MODE_SHUNT_BUS_TRIGGERED;
+	dev.range = TRB_INA219_BUS_VOLTAGE_RANGE_16V;
+	dev.gain = TRB_INA219_PGA_GAIN_40MV;
+	dev.bus_adc_resolution = TRB_INA219_RESOLUTION_11BIT_1;
+	dev.shunt_adc_resolution = TRB_INA219_RESOLUTION_11BIT_1;
+	dev.mode = TRB_INA219_MODE_SHUNT_BUS_TRIGGERED;
 
-	/* write the configuration to INA219C_REG_CONFIG */
+	/* write the configuration to TRB_INA219_REG_CONFIG */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_configure(&dev));
 
 	/* make sure the changes has been applied */
 
 	/* range */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_bus_voltage_range(&dev, &range));
-	TEST_ASSERT_EQUAL_UINT8(INA219C_BUS_VOLTAGE_RANGE_16V, range);
+	TEST_ASSERT_EQUAL_UINT8(TRB_INA219_BUS_VOLTAGE_RANGE_16V, range);
 
 	/* gain */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_pga_gain(&dev, &gain));
-	TEST_ASSERT_EQUAL_UINT8(INA219C_PGA_GAIN_40MV, gain);
+	TEST_ASSERT_EQUAL_UINT8(TRB_INA219_PGA_GAIN_40MV, gain);
 
 	/* mode */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_mode(&dev, &mode));
-	TEST_ASSERT_EQUAL_UINT8(INA219C_MODE_SHUNT_BUS_TRIGGERED, mode);
+	TEST_ASSERT_EQUAL_UINT8(TRB_INA219_MODE_SHUNT_BUS_TRIGGERED, mode);
 
 	/* BADC */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_badc_value(&dev, &res));
-	TEST_ASSERT_EQUAL_UINT8(INA219C_RESOLUTION_11BIT_1, res);
+	TEST_ASSERT_EQUAL_UINT8(TRB_INA219_RESOLUTION_11BIT_1, res);
 
 	/* SADC */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_sadc_value(&dev, &res));
-	TEST_ASSERT_EQUAL_UINT8(INA219C_RESOLUTION_11BIT_1, res);
+	TEST_ASSERT_EQUAL_UINT8(TRB_INA219_RESOLUTION_11BIT_1, res);
 
 	/* do the calibration */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_set_calibration(&dev));
 
 	/* should be ready soon after calibration */
-	TEST_ASSERT_EQUAL_INT8(INA219C_CONVERSION_IS_READY, ina219c_conversion_is_ready(&dev));
+	TEST_ASSERT_EQUAL_INT8(TRB_INA219_CONVERSION_IS_READY, ina219c_conversion_is_ready(&dev));
 
 	/* the circuit should not cause over-flowing */
-	TEST_ASSERT_EQUAL_INT8(INA219C_IS_NOT_OVERFLOWED, ina219c_conversion_is_overflowed(&dev));
+	TEST_ASSERT_EQUAL_INT8(TRB_INA219_IS_NOT_OVERFLOWED, ina219c_conversion_is_overflowed(&dev));
 
 	/* read the all sensor values at once */
 	TEST_ASSERT_EQUAL_INT8(0, ina219c_get_sensor_values(&dev));

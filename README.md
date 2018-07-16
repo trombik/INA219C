@@ -1,4 +1,4 @@
-# `INA219C`
+# `TRB_INA219`
 
 A C driver for INA219 IC.
 
@@ -9,9 +9,9 @@ not in the code.
 
 | Variable name | Platform | Framework | Driver |
 |---------------|----------|-----------|--------|
-| `INA219C_I2C_ESP_IDF` | `espressif32` | `esp-idf` | [Native I2C API](https://esp-idf.readthedocs.io/en/latest/api-reference/peripherals/i2c.html) |
-| `INA219C_I2C_WIRE` | `espressif32`, `espressif8266`, `atmelavr` | `arduino` | [`Wire`](https://www.arduino.cc/en/Reference/Wire) |
-| `INA219C_I2C_BRZO` | `espressif8266` | `arduino` | [`Brzo I2C`](https://github.com/pasko-zh/brzo_i2c) |
+| `TRB_INA219_I2C_ESP_IDF` | `espressif32` | `esp-idf` | [Native I2C API](https://esp-idf.readthedocs.io/en/latest/api-reference/peripherals/i2c.html) |
+| `TRB_INA219_I2C_WIRE` | `espressif32`, `espressif8266`, `atmelavr` | `arduino` | [`Wire`](https://www.arduino.cc/en/Reference/Wire) |
+| `TRB_INA219_I2C_BRZO` | `espressif8266` | `arduino` | [`Brzo I2C`](https://github.com/pasko-zh/brzo_i2c) |
 
 ## Usage
 
@@ -32,7 +32,7 @@ are saved in the `struct`.
 
 ```c
 
-#include <INA219C.h>
+#include <TRB_INA219.h>
 
 /*
  * configure I2C here
@@ -49,7 +49,7 @@ ina219c_get_sensor_values(&dev);
  */
 ```
 
-For more functions, see [INA219C_common.h](INA219C_common.h).
+For more functions, see [TRB_INA219_common.h](TRB_INA219_common.h).
 
 Examples can be found under [examples](examples).
 

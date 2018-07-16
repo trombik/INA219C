@@ -1,7 +1,7 @@
 #define STRETCHING_TIMEOUT_MILLI_SEC 1000
 #define I2C_ADDRESS 0x40
 
-#include <INA219C.h>
+#include <TRB_INA219.h>
 #include <Arduino.h>
 #include <brzo_i2c.h>
 

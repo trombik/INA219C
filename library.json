@@ -1,5 +1,5 @@
 {
-    "name": "INA219C",
+    "name": "TRB_INA219",
     "platforms": [
         "espressif32",
         "espressif8266",

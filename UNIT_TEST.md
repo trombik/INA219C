@@ -39,7 +39,7 @@ Build a circuit and connect it to the machine (TODO draw the schematic).
 Build the unit test application.
 
 ```
-make TEST_COMPONENTS="INA219C" flash
+make TEST_COMPONENTS="TRB_INA219" flash
 ```
 
 Establish USB serial connection.
@@ -81,7 +81,7 @@ After hitting enter key, it will show the test menu.
 
 ```
 Here's the test menu, pick your combo:
-(1)	"first_test" [INA219C]
+(1)	"first_test" [TRB_INA219]
 ...
 ```
 

@@ -1,11 +1,11 @@
-#if defined(_INA219C_Arduino_Wire_h)
+#if defined(_TRB_INA219_Arduino_Wire_h)
 
 #define WITH_REPEATED_START false
 #define WITHOUT_REPEATED_START true
 
 #include <Arduino.h>
 #include <Wire.h>
-#include "../../INA219C.h"
+#include "../../TRB_INA219.h"
 
 void
 ina219c_delay_ms(const uint32_t period)
