@@ -18,16 +18,16 @@ not in the code.
 Configure `I2C` bus, such as `i2c_param_config()`, or `Wire.begin()`. The
 library does not do that for you.
 
-Create `struct` `ina219c_dev` by `ina219c_create()`. The `struct` has some
+Create `struct` `ina219_dev` by `ina219_create()`. The `struct` has some
 default values configured.
 
 Set the configurations in the `struct` to Configuration Register by
-`ina219c_configure()`.
+`ina219_configure()`.
 
-Set calibration value to Calibration Register by `ina219c_set_calibration`. At
+Set calibration value to Calibration Register by `ina219_set_calibration`. At
 this point, the device is ready for measurement.
 
-Read all the values from the device by `ina219c_get_sensor_values`. The values
+Read all the values from the device by `ina219_get_sensor_values`. The values
 are saved in the `struct`.
 
 ```c
@@ -38,11 +38,11 @@ are saved in the `struct`.
  * configure I2C here
  */
 
-struct ina219c_dev dev;
-dev = ina219c_create(0x40);
-ina219c_configure(&dev);
-ina219c_set_calibration(&dev);
-ina219c_get_sensor_values(&dev);
+struct ina219_dev dev;
+dev = ina219_create(0x40);
+ina219_configure(&dev);
+ina219_set_calibration(&dev);
+ina219_get_sensor_values(&dev);
 
 /*
  * do something with dev.current, dev.power, etc ...

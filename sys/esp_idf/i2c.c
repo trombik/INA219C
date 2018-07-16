@@ -11,13 +11,13 @@
 #define ACK_CHECK_ENABLE	0x01
 
 void
-ina219c_delay_ms(const uint32_t period)
+ina219_delay_ms(const uint32_t period)
 {
 	vTaskDelay(period / portTICK_PERIOD_MS);
 }
 
 int8_t
-ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
+ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
 	int8_t r = 0;
 	i2c_cmd_handle_t command;
@@ -44,12 +44,12 @@ ina219c_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t
 	r = i2c_master_cmd_begin(I2C_NUM_0, command, 10 / portTICK_PERIOD_MS);
 	i2c_cmd_link_delete(command);
 	if (r != ESP_OK)
-		ESP_LOGE("ina219c_read", "i2c_master_cmd_begin() failed: %d", r);
+		ESP_LOGE("ina219_read", "i2c_master_cmd_begin() failed: %d", r);
 	return r;
 }
 
 int8_t
-ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
+ina219_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
 	i2c_cmd_handle_t command;
 	esp_err_t r;
@@ -75,10 +75,10 @@ ina219c_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_
 	i2c_cmd_link_delete(command);
 
 	if (r != ESP_OK)
-		ESP_LOGE("ina219c_write", "i2c_master_cmd_begin() failed: %d", r);
+		ESP_LOGE("ina219_write", "i2c_master_cmd_begin() failed: %d", r);
 	/* Register contents are updated 4 micro seconds after completion of the write
 	 * command */
-	ina219c_delay_ms(1);
+	ina219_delay_ms(1);
 	return r;
 }
 #endif

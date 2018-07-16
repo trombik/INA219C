@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <TRB_INA219.h>
 
-struct ina219c_dev dev;
+struct ina219_dev dev;
 
 char *
 float2string(float f)
@@ -25,15 +25,15 @@ setup()
 #else
     Wire.begin();
 #endif
-	dev = ina219c_create(0x40);
-	ina219c_configure(&dev);
-	ina219c_set_calibration(&dev);
+	dev = ina219_create(0x40);
+	ina219_configure(&dev);
+	ina219_set_calibration(&dev);
 }
 
 void
 loop()
 {
-	ina219c_get_sensor_values(&dev);
+	ina219_get_sensor_values(&dev);
 	Serial.print(F("bus_voltage:   "));
 	Serial.print(float2string(dev.bus_voltage));
 	Serial.println(F("V"));
@@ -46,5 +46,5 @@ loop()
 	Serial.print(F("current:       "));
 	Serial.print(float2string(dev.current * 1000));
 	Serial.println(F("mA"));
-	ina219c_delay_ms(1000);
+	ina219_delay_ms(1000);
 }
