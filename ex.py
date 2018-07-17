@@ -11,4 +11,6 @@ if "TRB_INA219_I2C_ESP_IDF" in cppdefines:
     env.Append(SRC_FILTER=["+<TRB_INA219.c>"])
 if "TRB_INA219_I2C_BRZO" in cppdefines:
     env.Append(SRC_FILTER=["+<TRB_INA219.cpp>"])
+if "TRB_INA219_I2C_LIB_I2C" in cppdefines:
+    env.Append(SRC_FILTER=["+<TRB_INA219.cpp>"])
 print env.get("SRC_FILTER")
