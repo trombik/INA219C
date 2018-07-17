@@ -15,6 +15,7 @@ ina219_mode_t mode;
 ina219_range_t range;
 ina219_pga_gain_t gain;
 ina219_resolution_t res;
+static i2c_port_t i2c_port = I2C_NUM_1;
 float voltage;
 float milliv;
 
@@ -32,8 +33,9 @@ i2c_init()
 	i2c_config.scl_pullup_en = GPIO_PULLUP_DISABLE;
 	i2c_config.master.clk_speed = 400000L; // 400KHz
 
-	TEST_ASSERT_EQUAL_INT8(0, i2c_param_config(I2C_NUM_0, &i2c_config));
-	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_install(I2C_NUM_0, i2c_config.mode, 0, 0, 0));
+	TEST_ASSERT_EQUAL_INT8(0, i2c_param_config(i2c_port, &i2c_config));
+	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_install(i2c_port, i2c_config.mode, 0, 0, 0));
+	TEST_ASSERT_EQUAL(I2C_NUM_1, ina219_set_i2c_port(i2c_port));
 	return 0;
 }
 
@@ -48,7 +50,8 @@ TEST_CASE("ina219_create", component)
 TEST_CASE("i2c_init", component)
 {
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
-	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
+	TEST_ASSERT_EQUAL(I2C_NUM_1, ina219_get_i2c_port());
+	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(i2c_port));
 }
 
 TEST_CASE("ina219_reset", component)
@@ -58,7 +61,7 @@ TEST_CASE("ina219_reset", component)
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, ina219_read16(&dev, INA219_REG_CONFIG, &reg_value));
 	TEST_ASSERT_EQUAL_UINT16_MESSAGE(INA219_REG_CONFIG_DEFAULT, reg_value, "INA219_REG_CONFIG has INA219_REG_CONFIG_DEFAULT value");
-	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
+	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(i2c_port));
 }
 
 TEST_CASE("ina219_decomplement", component)
@@ -89,7 +92,7 @@ TEST_CASE("ina219s_set_bits", component)
 	TEST_ASSERT_EQUAL_UINT16(1, reg_value);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(I2C_NUM_0));
+	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(i2c_port));
 }
 
 TEST_CASE("ina219_read16", component)
@@ -113,7 +116,7 @@ TEST_CASE("ina219_read16", component)
 	TEST_ASSERT_EQUAL(INA219_RESOLUTION_12BIT_1, res);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	i2c_driver_delete(I2C_NUM_0);
+	i2c_driver_delete(i2c_port);
 }
 
 TEST_CASE("set_pga_gain", component)
@@ -140,7 +143,7 @@ TEST_CASE("set_pga_gain", component)
 	TEST_ASSERT_EQUAL_INT8(INA219_PGA_GAIN_80MV, gain);
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	i2c_driver_delete(I2C_NUM_0);
+	i2c_driver_delete(i2c_port);
 }
 
 TEST_CASE("ina219_set", component)
@@ -179,7 +182,7 @@ TEST_CASE("ina219_set", component)
 		TEST_ASSERT_EQUAL_INT8(gains[i], gain);
 	}
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	i2c_driver_delete(I2C_NUM_0);
+	i2c_driver_delete(i2c_port);
 }
 
 TEST_CASE("ina219_regular_use_case", component)
@@ -207,7 +210,7 @@ TEST_CASE("ina219_regular_use_case", component)
 	TEST_ASSERT_EQUAL_INT8(0, ina219_get_bus_voltage(&dev, &voltage));
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	i2c_driver_delete(I2C_NUM_0);
+	i2c_driver_delete(i2c_port);
 }
 
 TEST_CASE("ina219_calc_calibration", component)
@@ -225,8 +228,6 @@ TEST_CASE("ina219_get_sensor_values", component)
 {
 	dev = ina219_create(i2c_address);
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
-	//TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	//TEST_ASSERT_EQUAL_INT8(0, ina219_read16(&dev, INA219_REG_CONFIG, &reg_value));
 
 	/* set non-default values */
 	dev.max_expected_i = 0.5; // Amps
@@ -291,5 +292,5 @@ TEST_CASE("ina219_get_sensor_values", component)
 	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.current * 1000 * 10));
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
-	i2c_driver_delete(I2C_NUM_0);
+	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(i2c_port));
 }
