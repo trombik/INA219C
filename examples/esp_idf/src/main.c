@@ -9,8 +9,7 @@
 
 #include <TRB_INA219.h>
 
-#define GPIO_SDA 21
-#define GPIO_SCL 22
+const i2c_port_t port = I2C_NUM_1;
 
 void
 halt()
@@ -33,10 +32,11 @@ i2c_init(const gpio_num_t sda, const gpio_num_t scl)
 	i2c_config.scl_pullup_en = GPIO_PULLUP_DISABLE;
 	i2c_config.master.clk_speed = 400000L; // 400KHz
 
-	r = i2c_param_config(I2C_NUM_0, &i2c_config);
+	r = i2c_param_config(port, &i2c_config);
 	ESP_ERROR_CHECK(r);
-	i2c_driver_install(I2C_NUM_0, i2c_config.mode, 0, 0, 0);
+	i2c_driver_install(port, i2c_config.mode, 0, 0, 0);
 	ESP_ERROR_CHECK(r);
+	ina219_set_i2c_port(port);
 	return r;
 }
 

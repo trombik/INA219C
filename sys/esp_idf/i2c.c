@@ -10,10 +10,26 @@
 /* I2C master will check ack from slave */
 #define ACK_CHECK_ENABLE	0x01
 
+static i2c_port_t i2c_port = I2C_NUM_0;
+
+i2c_port_t
+ina219_set_i2c_port(i2c_port_t port)
+{
+	i2c_port = port;
+	return i2c_port;
+}
+
+i2c_port_t
+ina219_get_i2c_port()
+{
+	return i2c_port;
+}
+
+
 void
 ina219_delay_ms(const uint32_t period)
 {
-	vTaskDelay(period / portTICK_PERIOD_MS);
+vTaskDelay(period / portTICK_PERIOD_MS);
 }
 
 int8_t
@@ -41,7 +57,7 @@ ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t 
 	ESP_ERROR_CHECK(i2c_master_stop(command));
 	/* start the transaction */
 	/* TODO support I2C_NUM_1 */
-	r = i2c_master_cmd_begin(I2C_NUM_0, command, 10 / portTICK_PERIOD_MS);
+	r = i2c_master_cmd_begin(i2c_port, command, 10 / portTICK_PERIOD_MS);
 	i2c_cmd_link_delete(command);
 	if (r != ESP_OK)
 		ESP_LOGE("ina219_read", "i2c_master_cmd_begin() failed: %d", r);
@@ -71,7 +87,7 @@ ina219_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t
 	/* I2C stop */
 	ESP_ERROR_CHECK(i2c_master_stop(command));
 	/* start transation */
-	r = i2c_master_cmd_begin(I2C_NUM_0, command, 10 / portTICK_PERIOD_MS);
+	r = i2c_master_cmd_begin(i2c_port, command, 10 / portTICK_PERIOD_MS);
 	i2c_cmd_link_delete(command);
 
 	if (r != ESP_OK)
