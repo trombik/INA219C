@@ -54,6 +54,13 @@ For more functions, see [TRB_INA219_common.h](TRB_INA219_common.h).
 
 Examples can be found under [examples](examples).
 
+## Known issues
+
+### Wire library in `arduino-esp32` is broken
+
+It has been claimed to be fixed in the master branch. Hopefully it will be
+fixed in the release (`arduino-esp32` has not been released as of 2018/07/17).
+
 ## Unit testing
 
 See [UNIT_TEST.md](UNIT_TEST.md).
