@@ -88,3 +88,15 @@ Here's the test menu, pick your combo:
 Entering the number starts the selected test. A special symbol `*` runs all
 tests.
 
+### FAIL: Expected Non-NULL
+
+In `esp-idf/tools/unit-test-app/components/unity/test_utils.c`, the unit test
+component checks the partition table. When the check fails, the test result
+shows wrong filename and line number, causing confusing error, saying `FAIL:
+Expected Non-NULL`.
+
+Make sure:
+
+* build environment is clean (run `make clean`)
+* local `sdkconfig` is correct (remove and recreate it by `rm sdkconfig &&
+  make menuconfig`).
