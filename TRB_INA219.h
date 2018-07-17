@@ -9,8 +9,12 @@
 
 #elif defined(TRB_INA219_I2C_BRZO)
 #include "TRB_INA219_Arduino_brzo.h"
+
+#elif defined(TRB_INA219_I2C_LIB_I2C)
+#include "TRB_INA219_Arduino_LIB_I2C.h"
+
 #else
-#error Please define one of TRB_INA219_I2C_ESP_IDF, TRB_INA219_I2C_WIRE, and TRB_INA219_I2C_BRZO
+#error Please define one of TRB_INA219_I2C_ESP_IDF, TRB_INA219_I2C_WIRE, TRB_INA219_I2C_BRZO, and TRB_INA219_I2C_LIB_I2C
 #endif // defined(TRB_INA219_I2C_ESP_IDF)
 
 #endif // !defined(_TRB_INA219_h)
