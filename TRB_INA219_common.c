@@ -13,7 +13,7 @@ ina219_read16(const struct ina219_dev *ina219_dev, const uint8_t reg, uint16_t *
 {
 	int32_t r;
 	uint8_t buffer[2];
-	ina219_dev->read(ina219_dev->address, reg, buffer, 2);
+	r = ina219_dev->read(ina219_dev->address, reg, buffer, 2);
 	*data = (buffer[0] << 8) | buffer[1];
 	return r;
 }
