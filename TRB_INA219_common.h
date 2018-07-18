@@ -93,6 +93,24 @@ typedef enum
 	INA219_RESOLUTION_12BIT_128	= 0b1111  /**< 12 bit, 128 samples / 68.10 ms */
 } ina219_resolution_t;
 
+/*!
+ * @brief ADC conversion time in us
+ */
+typedef enum
+{
+	INA219_RESOLUTION_9BIT_1_US	=    84,	/**< 9 bit / 84 us */
+	INA219_RESOLUTION_10BIT_1_US	=   148,	/**< 10 bit / 148 us */
+	INA219_RESOLUTION_11BIT_1_US	=   276,	/**< 11 bit / 276 us */
+	INA219_RESOLUTION_12BIT_1_US	=   532,	/**< 12 bit / 532 us, default */
+	INA219_RESOLUTION_12BIT_2_US	=  1060,	/**< 12 bit, 2 samples / 1.06 ms */
+	INA219_RESOLUTION_12BIT_4_US	=  2130,	/**< 12 bit, 4 samples / 2.13 ms */
+	INA219_RESOLUTION_12BIT_8_US	=  4260,	/**< 12 bit, 8 samples / 4.26 ms */
+	INA219_RESOLUTION_12BIT_16_US	=  8510,	/**< 12 bit, 16 samples / 8.51 ms */
+	INA219_RESOLUTION_12BIT_32_US	= 17020,	/**< 12 bit, 32 samples / 17.02 ms */
+	INA219_RESOLUTION_12BIT_64_US	= 34050,	/**< 12 bit, 64 samples / 34.05 ms */
+	INA219_RESOLUTION_12BIT_128_US	= 68100 	/**< 12 bit, 128 samples / 68.10 ms */
+} ina219_conversion_time_t;
+
 /*
  * @brief Operation mode
  *
