@@ -13,7 +13,7 @@ extern "C" {
  * data array of data to write or read
  * len the length of data
  */
-typedef int8_t (*ina219_fptr_t) (const uint8_t addr, const uint8_t reg_addr, uint8_t *data, const uint8_t len);
+typedef int32_t (*ina219_fptr_t) (const uint8_t addr, const uint8_t reg_addr, uint8_t *data, const uint8_t len);
 
 void
 ina219_delay_ms(const uint32_t period);
@@ -161,7 +161,7 @@ ina219_create(const uint8_t addr);
  * @param[out] *data : Pointer to the variable to store the values
  * @param[in] len: Length of bytes to read
  */
-int8_t
+int32_t
 ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len);
 
 /*!
@@ -178,7 +178,7 @@ ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t 
  * @param[in] data : The variable that stores the values to write
  * @param[in] len : Length of bytes to write
  */
-int8_t
+int32_t
 ina219_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len);
 
 /*!

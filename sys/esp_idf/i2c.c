@@ -32,10 +32,10 @@ ina219_delay_ms(const uint32_t period)
 vTaskDelay(period / portTICK_PERIOD_MS);
 }
 
-int8_t
+int32_t
 ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
-	int8_t r = 0;
+	int32_t r = 0;
 	i2c_cmd_handle_t command;
 
 	command = i2c_cmd_link_create();
@@ -64,11 +64,11 @@ ina219_read(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t 
 	return r;
 }
 
-int8_t
+int32_t
 ina219_write(const uint8_t addr, const uint8_t reg, uint8_t *data, const uint8_t len)
 {
 	i2c_cmd_handle_t command;
-	esp_err_t r;
+	int32_t r;
 
 	/* read-only registers */
 	assert(

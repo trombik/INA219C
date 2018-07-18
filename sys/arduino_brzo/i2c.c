@@ -36,10 +36,10 @@ ina219_delay_ms(const uint32_t period)
 	}
 }
 
-int8_t
+int32_t
 ina219_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
-	int8_t result = 0;
+	int32_t result = 0;
 	uint8_t reg_addr_copy;
 
 	reg_addr_copy = reg_addr;
@@ -55,10 +55,10 @@ ina219_read(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, con
 	return result;
 }
 
-int8_t
+int32_t
 ina219_write(const uint8_t dev_id, const uint8_t reg_addr, uint8_t *reg_data, const uint8_t len)
 {
-	int8_t result = 0;
+	int32_t result = 0;
 	uint8_t *buffer;
 
 	/* the buffer needs an extra byte in the first element */
