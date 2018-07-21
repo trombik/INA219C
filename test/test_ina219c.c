@@ -43,8 +43,8 @@ TEST_CASE("ina219_create", component)
 {
 	dev = ina219_create(i2c_address);
 	TEST_ASSERT_EQUAL_UINT8(i2c_address, dev.address);
-	TEST_ASSERT_EQUAL(3, dev.max_expected_i);
-	TEST_ASSERT_EQUAL(1, dev.shunt_r * 10);
+	TEST_ASSERT_EQUAL(3, dev.i_max_expected);
+	TEST_ASSERT_EQUAL(1, dev.r_shunt * 10);
 }
 
 TEST_CASE("i2c_init", component)
@@ -106,7 +106,7 @@ TEST_CASE("ina219_read16", component)
 	    "INA219_REG_CONFIG has default value after reset");
 	TEST_ASSERT_EQUAL(0, ina219_get_mode(&dev, &mode));
 	TEST_ASSERT_EQUAL(INA219_MODE_SHUNT_BUS_CONTINUOUS, mode);
-	TEST_ASSERT_EQUAL(0, ina219_get_bus_voltage_range(&dev, &range));
+	TEST_ASSERT_EQUAL(0, ina219_get_v_bus_range(&dev, &range));
 	TEST_ASSERT_EQUAL((ina219_range_t)INA219_BUS_VOLTAGE_RANGE_32V, range);
 	TEST_ASSERT_EQUAL(0, ina219_get_pga_gain(&dev, &gain));
 	TEST_ASSERT_EQUAL(INA219_PGA_GAIN_320MV, gain);
@@ -152,7 +152,7 @@ TEST_CASE("ina219_set", component)
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
 
-	TEST_ASSERT_EQUAL(INA219_BUS_VOLTAGE_RANGE_16V, ina219_get_bus_voltage_range(&dev, &range));
+	TEST_ASSERT_EQUAL(INA219_BUS_VOLTAGE_RANGE_16V, ina219_get_v_bus_range(&dev, &range));
 	ina219_mode_t modes[] = {
 		INA219_MODE_POWERDOWN,
 		INA219_MODE_SHUNT_TRIGGERED,
@@ -207,7 +207,7 @@ TEST_CASE("ina219_regular_use_case", component)
 			break;
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
-	TEST_ASSERT_EQUAL_INT8(0, ina219_get_bus_voltage(&dev, &voltage));
+	TEST_ASSERT_EQUAL_INT8(0, ina219_get_v_bus(&dev, &voltage));
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
 	i2c_driver_delete(i2c_port);
@@ -219,7 +219,7 @@ TEST_CASE("ina219_calc_calibration", component)
 	TEST_ASSERT_EQUAL_INT8(0, ina219_calc_calibration(&dev));
 	TEST_ASSERT_EQUAL_HEX(0x1179, dev.cal);
 
-	dev.max_expected_i = 1.0;
+	dev.i_max_expected = 1.0;
 	TEST_ASSERT_EQUAL_INT8(0, ina219_calc_calibration(&dev));
 	TEST_ASSERT_EQUAL_HEX(0x346c, dev.cal);
 }
@@ -230,7 +230,7 @@ TEST_CASE("ina219_get_sensor_values", component)
 	TEST_ASSERT_EQUAL_INT8(0, i2c_init());
 
 	/* set non-default values */
-	dev.max_expected_i = 0.5; // Amps
+	dev.i_max_expected = 0.5; // Amps
 	dev.range = INA219_BUS_VOLTAGE_RANGE_16V;
 	dev.gain = INA219_PGA_GAIN_40MV;
 	dev.bus_adc_resolution = INA219_RESOLUTION_11BIT_1;
@@ -243,7 +243,7 @@ TEST_CASE("ina219_get_sensor_values", component)
 	/* make sure the changes has been applied */
 
 	/* range */
-	TEST_ASSERT_EQUAL_INT8(0, ina219_get_bus_voltage_range(&dev, &range));
+	TEST_ASSERT_EQUAL_INT8(0, ina219_get_v_bus_range(&dev, &range));
 	TEST_ASSERT_EQUAL_UINT8(INA219_BUS_VOLTAGE_RANGE_16V, range);
 
 	/* gain */
@@ -281,15 +281,15 @@ TEST_CASE("ina219_get_sensor_values", component)
 	 * Power:         4.00 mW
 	 * Current:       1.30 mA
 	 */
-	ESP_LOGI(__func__, "bus_voltage: %0.2fV", dev.bus_voltage);
-	ESP_LOGI(__func__, "shunt_voltage: %0.2fmV", dev.shunt_voltage * 1000);
-	ESP_LOGI(__func__, "power: %0.2fmW", dev.power * 1000);
-	ESP_LOGI(__func__, "current: %0.2fmA", dev.current * 1000);
+	ESP_LOGI(__func__, "bus_voltage: %0.2fV", dev.v_bus);
+	ESP_LOGI(__func__, "shunt_voltage: %0.2fmV", dev.v_shunt * 1000);
+	ESP_LOGI(__func__, "power: %0.2fmW", dev.p_bus * 1000);
+	ESP_LOGI(__func__, "current: %0.2fmA", dev.i_bus * 1000);
 
-	TEST_ASSERT_INT8_WITHIN(3, 33, (int8_t)(dev.bus_voltage * 10));
-	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.shunt_voltage * 1000 * 100));
-	TEST_ASSERT_INT8_WITHIN(1,  4, (int8_t)(dev.power * 1000));
-	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.current * 1000 * 10));
+	TEST_ASSERT_INT8_WITHIN(3, 33, (int8_t)(dev.v_bus * 10));
+	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.v_shunt * 1000 * 100));
+	TEST_ASSERT_INT8_WITHIN(1,  4, (int8_t)(dev.p_bus * 1000));
+	TEST_ASSERT_INT8_WITHIN(3, 13, (int8_t)(dev.i_bus * 1000 * 10));
 
 	TEST_ASSERT_EQUAL_INT8(0, ina219_reset(&dev));
 	TEST_ASSERT_EQUAL_INT8(0, i2c_driver_delete(i2c_port));

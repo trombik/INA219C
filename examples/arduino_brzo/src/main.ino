@@ -33,17 +33,17 @@ void
 loop()
 {
 	ina219_get_sensor_values(&dev);
-	Serial.print(F("bus_voltage:   "));
-	Serial.print(float2string(dev.bus_voltage));
+	Serial.print(F("v_bus:   "));
+	Serial.print(float2string(dev.v_bus));
 	Serial.println(F("V"));
-	Serial.print(F("shunt_voltage: "));
-	Serial.print(float2string(dev.shunt_voltage * 1000));
+	Serial.print(F("v_shunt: "));
+	Serial.print(float2string(dev.v_shunt * 1000));
 	Serial.println(F("mV"));
-	Serial.print(F("power:         "));
-	Serial.print(float2string(dev.power * 1000));
+	Serial.print(F("p_bus:         "));
+	Serial.print(float2string(dev.p_bus * 1000));
 	Serial.println(F("mW"));
-	Serial.print(F("current:       "));
-	Serial.print(float2string(dev.current * 1000));
+	Serial.print(F("i_bus:       "));
+	Serial.print(float2string(dev.i_bus * 1000));
 	Serial.println(F("mA"));
 	ina219_delay_ms(1000);
 }
