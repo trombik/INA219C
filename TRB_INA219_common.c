@@ -90,7 +90,7 @@ ina219_set_bits(const struct ina219_dev *dev, const uint8_t reg, const uint16_t 
 }
 
 int32_t
-ina219_get_bus_voltage_range(const struct ina219_dev *dev, ina219_range_t *range)
+ina219_get_v_bus_range(const struct ina219_dev *dev, ina219_range_t *range)
 {
 	int32_t r;
 	uint16_t reg_value;
@@ -124,21 +124,21 @@ int32_t
 ina219_calc_calibration(struct ina219_dev *dev)
 {
 	float minimumLSB;
-	float currentlsb;
+	float current_lsb;
 
-	assert(dev->max_expected_i > 0);
-	assert(dev->shunt_r > 0);
+	assert(dev->i_max_expected > 0);
+	assert(dev->r_shunt > 0);
 
-	minimumLSB = dev->max_expected_i / 32767;
-	currentlsb = (uint16_t)(minimumLSB * 100000000) + 1;
-	currentlsb /= 100000000;
+	minimumLSB = dev->i_max_expected / 32767;
+	current_lsb = (uint16_t)(minimumLSB * 100000000) + 1;
+	current_lsb /= 100000000;
 
-	assert(currentlsb != 0);
+	assert(current_lsb != 0);
 
-	dev->current_lsb = currentlsb;
-	dev->cal = (uint16_t)((0.04096) / (currentlsb * dev->shunt_r));
-	dev->power_lsb = currentlsb * 20;
-	dev->max_possible_i = __ina219_get_shunt_max_v(dev) / dev->shunt_r;
+	dev->current_lsb = current_lsb;
+	dev->cal = (uint16_t)((0.04096) / (current_lsb * dev->r_shunt));
+	dev->power_lsb = current_lsb * 20;
+	dev->i_max_possible = __ina219_get_shunt_max_v(dev) / dev->r_shunt;
 	return 0;
 }
 
@@ -230,53 +230,53 @@ ina219_conversion_is_overflowed(const struct ina219_dev *dev)
 }
 
 int32_t
-ina219_get_bus_voltage(const struct ina219_dev *dev, float *voltage)
+ina219_get_v_bus(const struct ina219_dev *dev, float *voltage)
 {
 	int32_t r;
-	uint16_t bus_voltage_raw;
-	r = ina219_read16(dev, INA219_REG_BUS, &bus_voltage_raw);
+	uint16_t v_bus_raw;
+	r = ina219_read16(dev, INA219_REG_BUS, &v_bus_raw);
 	if (r != 0)
 		return r;
-	*voltage = (float)(bus_voltage_raw >> 3) * 0.004 ; // in V (LSB 4mV)
+	*voltage = (float)(v_bus_raw >> 3) * 0.004 ; // in V (LSB 4mV)
 	return r;
 }
 
 int32_t
-ina219_get_power(const struct ina219_dev *dev, float *power)
+ina219_get_p_bus(const struct ina219_dev *dev, float *p_bus)
 {
 	int32_t r;
-	uint16_t power_raw;
-	r = ina219_read16(dev, INA219_REG_POWER, &power_raw);
+	uint16_t p_bus_raw;
+	r = ina219_read16(dev, INA219_REG_POWER, &p_bus_raw);
 	if (r != 0)
 		return r;
-	*power = (float)(dev->power_lsb * power_raw);
+	*p_bus = (float)(dev->power_lsb * p_bus_raw);
 	return r;
 }
 
 int32_t
-ina219_get_current(const struct ina219_dev *dev, float *current)
+ina219_get_i_bus(const struct ina219_dev *dev, float *i_bus)
 {
 	int32_t r;
-	uint16_t current_raw;
-	r = ina219_read16(dev, INA219_REG_CURRENT, &current_raw);
+	uint16_t i_bus_raw;
+	r = ina219_read16(dev, INA219_REG_CURRENT, &i_bus_raw);
 	if (r != 0)
 		return r;
-	if ((current_raw >> 15 ) == 1) {
-		*current = ina219_decomplement(current_raw, 1) * dev->current_lsb;
+	if ((i_bus_raw >> 15 ) == 1) {
+		*i_bus = ina219_decomplement(i_bus_raw, 1) * dev->current_lsb;
 	} else {
-		*current = current_raw * dev->current_lsb; // in A
+		*i_bus = i_bus_raw * dev->current_lsb; // in A
 	}
 	return r;
 }
 
 int32_t
-ina219_get_shunt_voltage(struct ina219_dev *dev, float *shunt_voltage)
+ina219_get_v_shunt(struct ina219_dev *dev, float *v_shunt)
 {
 	int32_t r;
 	uint8_t sign_bits = 0;
-	uint16_t shunt_voltage_raw;
+	uint16_t v_r_shuntaw;
 
-	r = ina219_read16(dev, INA219_REG_SHUNT, &shunt_voltage_raw);
+	r = ina219_read16(dev, INA219_REG_SHUNT, &v_r_shuntaw);
 	if (r != 0)
 		return r;
 
@@ -295,9 +295,9 @@ ina219_get_shunt_voltage(struct ina219_dev *dev, float *shunt_voltage)
 		break;
 	}
 	assert(sign_bits != 0);
-	*shunt_voltage = ((shunt_voltage_raw >> 15) == 1)
-	    ? (float)ina219_decomplement(shunt_voltage_raw, sign_bits) / 100000.0
-	    : (float)shunt_voltage_raw / 100000.0; // in V (LSB 10uV)
+	*v_shunt = ((v_r_shuntaw >> 15) == 1)
+	    ? (float)ina219_decomplement(v_r_shuntaw, sign_bits) / 100000.0
+	    : (float)v_r_shuntaw / 100000.0; // in V (LSB 10uV)
 	return r;
 }
 
@@ -306,16 +306,16 @@ ina219_get_sensor_values(struct ina219_dev *dev)
 {
 	int32_t r;
 
-	r = ina219_get_shunt_voltage(dev, &(dev->shunt_voltage));
+	r = ina219_get_v_shunt(dev, &(dev->v_shunt));
 	if (r != 0)
 		return r;
-	r = ina219_get_bus_voltage(dev, &(dev->bus_voltage));
+	r = ina219_get_v_bus(dev, &(dev->v_bus));
 	if (r != 0)
 		return r;
-	r = ina219_get_power(dev, &(dev->power)); // in W
+	r = ina219_get_p_bus(dev, &(dev->p_bus)); // in W
 	if (r != 0)
 		return r;
-	r = ina219_get_current(dev, &(dev->current));
+	r = ina219_get_i_bus(dev, &(dev->i_bus));
 	if (r != 0)
 		return r;
 	return 0;
@@ -328,8 +328,8 @@ ina219_create(const uint8_t addr)
 	dev.address = addr;
 	dev.read = ina219_read;
 	dev.write = ina219_write;
-	dev.max_expected_i = 3.0;
-	dev.shunt_r = 0.1;
+	dev.i_max_expected = 3.0;
+	dev.r_shunt = 0.1;
 
 	dev.range = INA219_BUS_VOLTAGE_RANGE_32V;
 	dev.gain = INA219_PGA_GAIN_320MV;

@@ -48,13 +48,13 @@ task_measure(void * pvParameters)
 	float v_bus;
 	float v_shunt;
 	float p;
-	float current;
+	float i_bus;
 
 	vTaskDelay(2000 / portTICK_PERIOD_MS);
 	ESP_LOGI(log_tag, "Starting the task");
 
 	dev = ina219_create(INA219_ADDRESS);
-	dev.max_expected_i = 1;
+	dev.i_max_expected = 1;
 
 	ESP_LOGI(log_tag, "Initialinzing I2C...");
 	i2c_init((gpio_num_t)GPIO_SDA, (gpio_num_t)GPIO_SCL);
@@ -94,30 +94,30 @@ task_measure(void * pvParameters)
 	ESP_LOGI(log_tag, "conversion is now ready");
 
 	for(;;) {
-		if (ina219_get_bus_voltage(&dev, &v_bus) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219_get_bus_voltage()");
+		if (ina219_get_v_bus(&dev, &v_bus) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_v_bus()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Vbus: %f", v_bus);
-		if (ina219_get_shunt_voltage(&dev, &v_shunt) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219_get_shunt_voltage()");
+		if (ina219_get_v_shunt(&dev, &v_shunt) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_v_shunt()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Vshunt: %f", v_shunt);
-		if (ina219_get_power(&dev, &p) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219_get_power()");
+		if (ina219_get_p_bus(&dev, &p) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_p_bus()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
 		ESP_LOGI(log_tag, "Power: %f", p);
-		if (ina219_get_current(&dev, &current) != 0) {
-			ESP_LOGE(log_tag, "failed to ina219_get_current()");
+		if (ina219_get_i_bus(&dev, &i_bus) != 0) {
+			ESP_LOGE(log_tag, "failed to ina219_get_i_bus()");
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			continue;
 		}
-		ESP_LOGI(log_tag, "Current: %f", current);
+		ESP_LOGI(log_tag, "Current: %f", i_bus);
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 }

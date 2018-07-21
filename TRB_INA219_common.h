@@ -133,21 +133,21 @@ typedef enum
  */
 struct ina219_dev {
 	uint8_t address; /**< I2C address (RW) */
-	float max_expected_i; /**< Maximum expected current in Amps (RW) */
-	float shunt_r; /**< Shunt register value in Ohms (RW) */
+	float i_max_expected; /**< Maximum expected i_bus in Amps (RW) */
+	float r_shunt; /**< Shunt register value in Ohms (RW) */
 	ina219_range_t range; /**< Bus Voltage range (RW) */
 	ina219_pga_gain_t gain; /**< PGA gain (RW) */
 	ina219_resolution_t bus_adc_resolution; /**< Bus ADC resolution (RW) */
 	ina219_resolution_t shunt_adc_resolution; /** Shunt ADC resolution (RW) */
 	ina219_mode_t mode; /**< Operaion mode (RW) */
 
-	float shunt_voltage; /**< Shunt volatage in V (RO) */
-	float bus_voltage; /**< Bus voltage in V (RO) */
-	float power; /**< Power in Watt (RO) */
-	float current; /**< Current in Amps (RO) */
+	float v_shunt; /**< Shunt volatage in V (RO) */
+	float v_bus; /**< Bus voltage in V (RO) */
+	float p_bus; /**< Power in Watt (RO) */
+	float i_bus; /**< Current in Amps (RO) */
 	float current_lsb; /**< Current_LSB (RO) */
 	float power_lsb; /**< Power_LSB (RO) */
-	float max_possible_i; /**< Maximum measurable current in Amps in Amps (RO) */
+	float i_max_possible; /**< Maximum measurable i_bus in Amps (RO) */
 	uint16_t cal; /**< A Calibration value for Calibration Register (RO) */
 
 	ina219_fptr_t read; /**< framework-dependant function pointer to I2C read (RO) */
@@ -257,7 +257,7 @@ ina219_get_mode(const struct ina219_dev *dev, ina219_mode_t *mode);
  * @param[out] range : one of ina219_range_t
  */
 int32_t
-ina219_get_bus_voltage_range(const struct ina219_dev *dev, ina219_range_t *range);
+ina219_get_v_bus_range(const struct ina219_dev *dev, ina219_range_t *range);
 
 /*!
  * @brief Caribrate the sensor.
@@ -340,7 +340,7 @@ int32_t
 ina219_conversion_is_ready(const struct ina219_dev *dev);
 
 /*!
- * @brief Return whether power or current calculation are out of range
+ * @brief Return whether p_bus or i_bus calculation are out of range
  *
  * Return OVF, or Math Overflow Flag, in Bus Voltage Register, return
  * the result.
@@ -359,7 +359,7 @@ ina219_conversion_is_overflowed(const struct ina219_dev *dev);
  * @param[out] voltage : Bus voltage in V
  */
 int32_t
-ina219_get_bus_voltage(const struct ina219_dev *dev, float *voltage);
+ina219_get_v_bus(const struct ina219_dev *dev, float *voltage);
 
 /*!
  * @brief Read one or more bits from a register
@@ -386,36 +386,36 @@ uint8_t
 ina219_get_bits_from_mask(uint16_t mask);
 
 /*!
- * @brief Get power in W from Power Register
+ * @brief Get p_bus in W from Power Register
  *
- * Read Power Register and return the power after calculation.
+ * Read Power Register and return the p_bus after calculation.
  *
  * @param[in] *ina219_dev : Pointer to struct ina219_dev
- * @power[out] *power : Variable to save the value
+ * @p_bus[out] *p_bus : Variable to save the value
  */
 int32_t
-ina219_get_power(const struct ina219_dev *dev, float *power);
+ina219_get_p_bus(const struct ina219_dev *dev, float *p_bus);
 
 /*!
- * @brief Get current in Amps from Current Register
+ * @brief Get i_bus in Amps from Current Register
  *
- * Read Current Register and return the current after calculation.
+ * Read Current Register and return the i_bus after calculation.
  *
  * @param[in] *ina219_dev : Pointer to struct ina219_dev
- * @power[out] *current : Variable to save the value
+ * @p_bus[out] *i_bus : Variable to save the value
  */
 int32_t
-ina219_get_current(const struct ina219_dev *dev, float *current);
+ina219_get_i_bus(const struct ina219_dev *dev, float *i_bus);
 
 int32_t
 ina219_calc_calibration(struct ina219_dev *dev);
 
 /*!
- * @brief Get current, power, shunt register voltage, Vbus voltage values from
+ * @brief Get i_bus, p_bus, shunt register voltage, Vbus voltage values from
  * multiple registers
  *
- * Call ina219_get_shunt_voltage(), ina219_get_bus_voltage(),
- * ina219_get_power(), and ina219_get_current(), then save the values in
+ * Call ina219_get_v_shunt(), ina219_get_v_bus(),
+ * ina219_get_p_bus(), and ina219_get_i_bus(), then save the values in
  * struct ina219_dev.
  *
  * @param[in] *ina219_dev : Pointer to struct ina219_dev
@@ -440,10 +440,10 @@ ina219_configure(struct ina219_dev * dev);
  * Read Shunt Voltage Register, and save the voltage in Volts to a variable.
  *
  * @param[in] *ina219_dev : Pointer to struct ina219_dev
- * @param[out] shunt_voltage : Variable to save the value
+ * @param[out] v_shunt : Variable to save the value
  */
 int32_t
-ina219_get_shunt_voltage(struct ina219_dev *dev, float *shunt_voltage);
+ina219_get_v_shunt(struct ina219_dev *dev, float *v_shunt);
 
 #if defined(__cplusplus)
 }
