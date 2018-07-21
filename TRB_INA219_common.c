@@ -305,20 +305,26 @@ int32_t
 ina219_get_sensor_values(struct ina219_dev *dev)
 {
 	int32_t r;
+	float v_shunt, v_bus, p_bus, i_bus;
 
-	r = ina219_get_v_shunt(dev, &(dev->v_shunt));
+	r = ina219_get_v_shunt(dev, &v_shunt);
 	if (r != 0)
-		return r;
-	r = ina219_get_v_bus(dev, &(dev->v_bus));
+		goto fail;
+	r = ina219_get_v_bus(dev, &v_bus);
 	if (r != 0)
-		return r;
-	r = ina219_get_p_bus(dev, &(dev->p_bus)); // in W
+		goto fail;
+	r = ina219_get_p_bus(dev, &p_bus);
 	if (r != 0)
-		return r;
-	r = ina219_get_i_bus(dev, &(dev->i_bus));
+		goto fail;
+	r = ina219_get_i_bus(dev, &i_bus);
 	if (r != 0)
-		return r;
-	return 0;
+		goto fail;
+	dev->v_shunt = v_shunt;
+	dev->v_bus = v_bus;
+	dev->p_bus = p_bus;
+	dev->i_bus = i_bus;
+fail:
+	return r;
 }
 
 struct ina219_dev
